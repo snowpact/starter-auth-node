@@ -6,7 +6,7 @@ import { HttpStatuses } from '../../../core/httpStatuses';
 export default ({ authRedisConnection }: IApiOptions): RequestHandler =>
   async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
-      await authRedisConnection.exec();
+      await authRedisConnection.multi().exec();
       return res.send({ response: 'OK' }).status(HttpStatuses.OK);
     } catch (error) {
       return next(error);

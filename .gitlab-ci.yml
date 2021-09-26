@@ -9,8 +9,10 @@ stages:
   - test
   - prepare
   - check
-  - check
   - deploy
+
+variables:
+  AUTH_REDIS_URL: 'redis://e2e-test-redis:6379/0'
 
 install_back_dependencies:
   stage: prepare
