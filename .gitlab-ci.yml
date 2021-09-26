@@ -27,13 +27,14 @@ install_back_dependencies:
     - if: '$CI_COMMIT_BRANCH == "develop"' # setting fixed value `develop` -- could be set to a var: $CI_DEFAULT_BRANCH
     - if: '$CI_COMMIT_TAG =~ /^v.+/'
 
-check:test:
+check:test-back:
   stage: check
   image: node:lts
   services:
     - name: redis:5.0-alpine
       alias: e2e-test-redis
   script:
+    - cd back
     - yarn test
   cache:
     key: ${CI_COMMIT_REF_SLUG}
@@ -45,10 +46,11 @@ check:test:
     - if: '$CI_COMMIT_BRANCH == "develop"'
     - if: '$CI_COMMIT_TAG =~ /^v.+/'
 
-check:lint:
+check:lint-back:
   stage: check
   image: node:lts
   script:
+    - cd back
     - yarn run lint
   cache:
     key: ${CI_COMMIT_REF_SLUG}
