@@ -59,7 +59,7 @@ pull-docker-images:
 .PHONY: start
 #%% Create and start containers
 start:
-	$(DOCKER_COMPOSE) up --remove-orphans -d backend-api-sp-auth redis-sp-auth
+	$(DOCKER_COMPOSE) up --remove-orphans -d backend-api-sp-auth
 
 .PHONY: stop
 #%% stop containers
@@ -73,8 +73,6 @@ stop:
 test-back:
 	@echo "| Run test for backend service |"
 	$(DOCKER_COMPOSE) run --rm e2e-test-backend-api-sp-auth yarn jest --color
-	@echo "Sleeping for 20s waiting for previous actions to complete"
-	@sleep 20
 
 .PHONY: down
 #%% Create and start containers

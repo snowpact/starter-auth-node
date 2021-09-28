@@ -2,9 +2,11 @@ import apiRouter from '../api';
 import config from './config';
 import buildApp from './app';
 import { buildAuthRedis } from './redis';
+import { initDatabase } from './database';
 
-export default (): void => {
+export default async (): Promise<void> => {
   try {
+    await initDatabase();
     const authRedisConnection = buildAuthRedis();
 
     const app = buildApp({

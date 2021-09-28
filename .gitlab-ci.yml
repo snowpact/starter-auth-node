@@ -5,6 +5,9 @@ include:
 .default_rule: &default_rule
   if: '$CI_COMMIT_BRANCH =~ /^feature|^fix|^hotfix|^bugfix|^release|^snyk-fix/'
 
+before_script:
+  - yarn i -g firebase-tools
+
 stages:
   - test
   - prepare
@@ -13,6 +16,11 @@ stages:
 
 variables:
   AUTH_REDIS_URL: 'redis://e2e-test-redis:6379/0'
+  DB_HOST: 'e2e-test-db'
+  DB_PORT: 5432
+  DB_USERNAME: postgres
+  DB_PASSWORD: pass
+  DB_DATABASE: postgres
 
 install_back_dependencies:
   stage: prepare
@@ -33,6 +41,9 @@ check:test-back:
   stage: check
   image: node:lts
   services:
+    - name: postgres:13.4
+      alias: e2e-test-db
+      command: ['mysqld', '--sql_mode=ALLOW_INVALID_DATES']
     - name: redis:5.0-alpine
       alias: e2e-test-redis
   script:

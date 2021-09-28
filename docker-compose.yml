@@ -14,13 +14,19 @@ services:
       - backend
     depends_on:
       - redis-sp-auth
+      - backend-database-sp-auth
     environment:
       PORT: 8080
       # ADMIN_API_KEY: $ADMIN_API_KEY
       # GOOGLE_PROJECT_ID: "mrh-morgan-free-scrap"
       # GOOGLE_PROJECT_LOCATION: "europe-west1"
-      FIRESTORE_EMULATOR_HOST: firebase-tools:8080
       AUTH_REDIS_URL: redis://redis-sp-auth:6379/0
+      DB_CACHE_REDIS_URL: redis://:redis@redis-sp-auth:6379/0
+      DB_HOST: 'backend-database-sp-auth'
+      DB_PORT: 5432
+      DB_USERNAME: postgres
+      DB_PASSWORD: pass
+      DB_DATABASE: postgres
     working_dir: /usr/app
     command: yarn dev
 
@@ -37,55 +43,53 @@ services:
       - backend
     depends_on:
       - e2e-test-redis-sp-auth
+      - e2e-test-backend-database-sp-auth
     environment:
       PORT: 8080
       # ADMIN_API_KEY: $ADMIN_API_KEY
       # GOOGLE_PROJECT_ID: "mrh-morgan-free-scrap"
       # GOOGLE_PROJECT_LOCATION: "europe-west1"
-      FIRESTORE_EMULATOR_HOST: e2e-test-firebase-tools:8180
       AUTH_REDIS_URL: redis://e2e-test-redis-sp-auth:6379/0
+      DB_CACHE_REDIS_URL: redis://:redis@e2e-test-redis-sp-auth:6379/0
+      DB_HOST: 'e2e-test-backend-database-sp-auth'
+      DB_PORT: 5432
+      DB_USERNAME: postgres
+      DB_PASSWORD: pass
+      DB_DATABASE: postgres
     working_dir: /usr/app
     command: yarn dev
 
-  firebase-tools-sp-auth:
-    container_name: firebase-tools-sp-auth
-    image: andreysenov/firebase-tools
-    restart: unless-stopped
-    ports:
-      - 9099:9099
-      - 9005:9005
-      - 9000:9000
-      - 8085:8085
-      - 8080:8080
-      - 5001:5001
-      - 5000:5000
-      - 4000:4000
+  backend-database-sp-auth:
+    container_name: backend-database-sp-auth
+    image: postgres:13.4
+    restart: always
     volumes:
-      - db-data:/home/node
+      - db-data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
     networks:
       - backend
-    working_dir: /home/node
-    command: firebase emulators:start
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: postgres
+      PGDATA: /var/lib/postgresql/data/db-files/
 
-  e2e-test-firebase-tools-sp-auth:
-    container_name: e2e-test-firebase-tools-sp-auth
-    image: andreysenov/firebase-tools
-    restart: unless-stopped
-    ports:
-      - 9199:9099
-      - 9105:9005
-      - 9100:9000
-      - 8185:8085
-      - 8180:8080
-      - 5101:5001
-      - 5100:5000
-      - 4100:4000
+  e2e-test-backend-database-sp-auth:
+    container_name: e2e-test-backend-database-sp-auth
+    image: postgres:13.4
+    restart: always
     volumes:
-      - ./e2e/tmpdbdata:/home/node
+      - db-data:/var/lib/postgresql/data
+    ports:
+      - 5433:5432
     networks:
       - backend
-    working_dir: /home/node
-    command: firebase emulators:start
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: postgres
+      PGDATA: /var/lib/postgresql/data/db-files/
 
   redis-sp-auth:
     container_name: redis-sp-auth
@@ -113,7 +117,6 @@ services:
 
 networks:
   backend:
-    driver: bridge
 
 volumes:
   db-data:
