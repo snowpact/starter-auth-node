@@ -3,8 +3,8 @@ import { Redis } from 'ioredis';
 import request from 'supertest';
 
 import { testDbManager } from '../../../helpers/testDb.helper';
-import loginRouter from '../../../../src/api/authentication/login';
 import buildTestApp from '../../../helpers/testApp.helper';
+import loginRouter from '../../../../src/api/authentication/login';
 import buildRedisHelper from '../../../helpers/testRedis.helper';
 import { HttpStatuses } from '../../../../src/core/httpStatuses';
 

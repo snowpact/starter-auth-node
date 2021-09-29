@@ -17,9 +17,14 @@ export const initDatabase = (connectionConfig?: PostgresConnectionOptions): Prom
         }
       : {};
 
-  return createConnection({
+  const socketPath = config.INSTANCE_CONNECTION_NAME
+    ? `/cloudsql/${config.INSTANCE_CONNECTION_NAME}`
+    : undefined;
+
+  const dbEnvConfig: PostgresConnectionOptions = {
     type: 'postgres',
-    host: config.DB_HOST,
+    host: socketPath ? socketPath : config.DB_HOST,
+    port: socketPath ? undefined : config.DB_PORT,
     username: config.DB_USERNAME,
     password: config.DB_PASSWORD,
     database: config.DB_DATABASE,
@@ -27,11 +32,14 @@ export const initDatabase = (connectionConfig?: PostgresConnectionOptions): Prom
     logging: config.DB_LOGGING,
     synchronize: false,
     extra: {
-      connectionLimit: 5, // default: 10
+      connectionLimit: 10, // default: 10
+      socketPath,
     },
     ...cache,
     ...connectionConfig,
-  });
+  };
+
+  return createConnection(dbEnvConfig);
 };
 
 export const entitiesPath = path.join(__dirname, '..', 'entities');

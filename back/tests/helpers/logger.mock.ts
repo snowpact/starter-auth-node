@@ -1,4 +1,4 @@
-import { ILogger } from '../logger';
+import { ILogger } from '../../src/core/logger';
 
 export const buildLoggerMock = (): ILogger => ({
   debug: jest.fn(),

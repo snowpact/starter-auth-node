@@ -32,6 +32,7 @@ export interface IDatabaseConfig {
   DB_PASSWORD: string;
   DB_DATABASE: string;
   DB_CACHE_REDIS_URL?: string;
+  INSTANCE_CONNECTION_NAME?: string;
 }
 
 function parseBoolean(val: string): boolean | undefined {
@@ -47,8 +48,6 @@ function parseNumber(val: string): number {
 }
 
 const requiredVariables: (keyof IDatabaseConfig)[] = [
-  'DB_HOST',
-  'DB_PORT',
   'DB_USERNAME',
   'DB_PASSWORD',
   'DB_DATABASE',
