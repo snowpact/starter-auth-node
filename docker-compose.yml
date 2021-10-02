@@ -80,7 +80,7 @@ services:
     image: postgres:13.4
     restart: always
     volumes:
-      - db-data:/var/lib/postgresql/data
+      - e2e-test-db-data:/var/lib/postgresql/data
     ports:
       - 5433:5432
     networks:
@@ -90,6 +90,16 @@ services:
       POSTGRES_PASSWORD: pass
       POSTGRES_DB: postgres
       PGDATA: /var/lib/postgresql/data/db-files/
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8081:8080
+    networks:
+      - backend
+    environment:
+      ADMINER_DEFAULT_SERVER: backend-database-mrh
 
   redis-sp-auth:
     container_name: redis-sp-auth

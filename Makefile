@@ -122,12 +122,27 @@ lint-fix-back:
 	$(DOCKER_COMPOSE) run --rm --no-deps backend-api-sp-auth yarn lint:fix
 	@echo "| Linter fix back finish |"
 
-.PHONY: run-firestore
-#%% run firestore
-run-firestore:
-	@echo "| run firestore |"
-	$(DOCKER_COMPOSE_RUN) --rm --no-deps firebase-tools bash
-	@echo "| run firestore |"
+.PHONY: db-generate-migration
+#%% generate migration, put MIGRATION_NAME={YOUR_NAME} in this command to custom the migration name
+db-generate-migration:
+	@echo "| Generate new migration database |"
+	$(DOCKER_COMPOSE_RUN) --rm backend-api-sp-auth yarn migration:generate -n $(MIGRATION_NAME)
+	@echo "| Migration database generated |"
+
+	
+.PHONY: db-migrate-run
+#%% run migrations for dev database
+db-migrate-run:
+	@echo "| Run migrations for dev database |"
+	$(DOCKER_COMPOSE_RUN) --rm backend-api-sp-auth yarn migration:run
+	@echo "| Finish run migrations for dev database |"
+
+.PHONY: db-migrate-run-e2e
+#%% run migrations for e2e test database
+db-migrate-run-e2e:
+	@echo "| Run migrations for e2e tests database |"
+	$(DOCKER_COMPOSE_RUN) --rm e2e-test-backend-api-sp-auth yarn migration:run
+	@echo "| Finish run migrations for e2e tests database |"
 
 
 # %: - rule which match any task name;
