@@ -6,4 +6,4 @@ import route from './route';
 import validationMiddleware from './validator';
 
 export default (options: IApiOptions): Router =>
-  Router().post('/login', validationMiddleware, validatedExpressRequest(route(options)));
+  Router().post('/register', validationMiddleware, validatedExpressRequest(route(options)));

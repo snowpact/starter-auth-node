@@ -6,12 +6,12 @@ import { HttpStatuses } from '../../../core/httpStatuses';
 import { ValidatedRequest } from '../../../core/utils';
 import UserRepository from '../../../repositories/user.repository';
 import service from './service';
-import { ILoginRequest } from './validator';
+import { IRegisterRequest } from './validator';
 
-type LoginRequest = ValidatedRequest<ILoginRequest>;
+type RegisterRequest = ValidatedRequest<IRegisterRequest>;
 
 export default ({ authRedisConnection }: IApiOptions): RequestHandler =>
-  async (req: LoginRequest, res: Response, next: NextFunction): Promise<Response | void> => {
+  async (req: RegisterRequest, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
       await authRedisConnection.multi().exec();
 
