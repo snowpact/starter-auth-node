@@ -4,7 +4,9 @@ import { getCustomRepository } from 'typeorm';
 import { IApiOptions } from '../..';
 import { HttpStatuses } from '../../../core/httpStatuses';
 import { ValidatedRequest } from '../../../core/utils';
+import { getTokensRepository } from '../../../repositories/tokens.repository';
 import UserRepository from '../../../repositories/user.repository';
+import serializer from './serializer';
 import service from './service';
 import { ILoginRequest } from './validator';
 
@@ -17,9 +19,16 @@ export default ({ authRedisConnection }: IApiOptions): RequestHandler =>
 
       const { email, password } = req.body;
 
-      await service({ email, password, userRepository: getCustomRepository(UserRepository) });
+      const { accessToken, refreshToken } = await service({
+        email,
+        password,
+        userRepository: getCustomRepository(UserRepository),
+        tokensRepository: getTokensRepository(authRedisConnection),
+      });
 
-      return res.send({ response: 'OK' }).status(HttpStatuses.OK);
+      const response = serializer(accessToken, refreshToken);
+
+      return res.send(response).status(HttpStatuses.OK);
     } catch (error) {
       return next(error);
     }

@@ -1,34 +1,38 @@
 import { compare } from 'bcrypt';
+import { ITokensRepository } from '../../../repositories/tokens.repository';
 import { IUserRepository } from '../../../repositories/user.repository';
 import badCredentialsError from '../../shared/errors/badCredentials.error';
-import userBlockedError from '../../shared/errors/userBlocked.error';
-import userNotEnabledError from '../../shared/errors/userNotEnabled.error';
+import { generateAccessToken } from '../../shared/services/jwt/accessToken.service';
+import { generateRefreshToken } from '../../shared/services/jwt/refreshToken.service';
+import { getUser } from './services/getUser.service';
 
 interface ILoginServiceOptions {
   email: string;
   password: string;
   userRepository: IUserRepository;
+  tokensRepository: ITokensRepository;
 }
 
-export default async ({ email, password, userRepository }: ILoginServiceOptions): Promise<void> => {
-  const user = await userRepository.getOneByEmail(email);
+interface ILoginServiceResponse {
+  accessToken: string;
+  refreshToken: string;
+}
 
-  if (!user) {
-    throw badCredentialsError();
-  }
-
-  if (user.blocked) {
-    throw userBlockedError();
-  }
-
-  if (!user.enabled) {
-    throw userNotEnabledError();
-  }
-
+export default async ({
+  email,
+  password,
+  userRepository,
+  tokensRepository,
+}: ILoginServiceOptions): Promise<ILoginServiceResponse> => {
+  const user = await getUser(email, userRepository);
   const isGoodPassword = await compare(password, user.password);
   if (!isGoodPassword) {
     throw badCredentialsError();
   }
 
-  // TODO : If password match, return JWT token + refresh token with response 200
+  const accessToken = generateAccessToken({ userId: user.id, email: user.email });
+  const refreshToken = generateRefreshToken({ userId: user.id, email: user.email });
+  await tokensRepository.storeRefreshToken({ refreshToken, userId: user.id });
+
+  return { accessToken, refreshToken };
 };

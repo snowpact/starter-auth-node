@@ -1,5 +1,4 @@
 import usersRepositoryMock from '../../../mocks/users.repository.mock';
-// import { ErrorCodes } from '../../../../src/api/shared/enums/errorCodes.enum';
 import { userEntityFactory } from '../../../helpers/factories/user.factory';
 import service from '../../../../src/api/authentication/register/service';
 import { HttpStatuses } from '../../../../src/core/httpStatuses';

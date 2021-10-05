@@ -10,6 +10,8 @@ import { HttpStatuses } from '../../../../src/core/httpStatuses';
 import { userEntityFactory } from '../../../helpers/factories/user.factory';
 import { ErrorCodes } from '../../../../src/api/shared/enums/errorCodes.enum';
 import { hashPassword } from '../../../../src/api/shared/services/password.service';
+import { REDIS_PREFIXES } from '../../../../src/repositories/tokens.repository';
+import config from '../../../../src/loader/config';
 
 const redisHelper = buildRedisHelper();
 const testDb = testDbManager();
@@ -35,9 +37,10 @@ describe('login route', () => {
   });
 
   test('should return success with code 200', async () => {
+    const userId = '8e339c8f-2187-46a9-8c30-aa15d3ebc330';
     const password = 'password';
     const hashedPassword = await hashPassword(password);
-    const user = userEntityFactory({ password: hashedPassword });
+    const user = userEntityFactory({ password: hashedPassword, id: userId });
 
     await testDb.persistUser(user);
 
@@ -46,7 +49,16 @@ describe('login route', () => {
       .send({ email: user.email, password });
 
     expect(status).toBe(HttpStatuses.OK);
-    expect(body).toEqual({ response: 'OK' });
+    expect(body.accessToken).toBeDefined();
+    expect(body.refreshToken).toBeDefined();
+
+    const resultFromDb = await authRedisConnection.keys('*');
+    expect(resultFromDb).toHaveLength(1);
+    expect(resultFromDb[0]).toMatch(`${REDIS_PREFIXES.REFRESH_TOKEN}:${userId}`);
+
+    const ttl = await authRedisConnection.ttl(resultFromDb[0]);
+
+    expect(ttl).toBeLessThanOrEqual(config.REFRESH_TOKEN_LIFE);
   });
 
   test('should return error with code 401 - user blocked', async () => {
