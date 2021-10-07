@@ -12,9 +12,11 @@ import { userEntityFactory } from '../../../helpers/factories/user.factory';
 import { ErrorCodes } from '../../../../src/api/shared/enums/errorCodes.enum';
 import UserRepository from '../../../../src/repositories/user.repository';
 import { hashPassword } from '../../../../src/api/shared/services/password.service';
+import { mockMailer } from '../../../mocks/mailer.mock';
 
 const redisHelper = buildRedisHelper();
 const testDb = testDbManager();
+mockMailer();
 
 describe('register route', () => {
   let testApp: Express;
@@ -44,7 +46,6 @@ describe('register route', () => {
     const user = userEntityFactory({ password: hashedPassword, email: email1 });
 
     await testDb.persistUser(user);
-
     const { status, body } = await request(testApp)
       .post('/api/register')
       .send({ email: email2, password });

@@ -27,6 +27,11 @@ variables:
   REFRESH_TOKEN_SECRET: r3p67zIY4TlYzTvu1VC6r3mV54545x1j
   ACCESS_TOKEN_LIFE: 600
   REFRESH_TOKEN_LIFE: 600
+  FROM_EMAIL: test@snowpact.com
+  SMTP_ENDPOINT: mailhog-sp-auth
+  SMTP_PORT: 1025
+  SMTP_USERNAME: username
+  SMTP_PASSWORD: password
 
 install_back_dependencies:
   stage: prepare

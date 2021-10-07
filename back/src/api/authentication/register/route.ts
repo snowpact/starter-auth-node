@@ -5,6 +5,7 @@ import { IApiOptions } from '../..';
 import { HttpStatuses } from '../../../core/httpStatuses';
 import { ValidatedRequest } from '../../../core/utils';
 import UserRepository from '../../../repositories/user.repository';
+import { getValidationTokenRepository } from '../../../repositories/validationToken.repository';
 import service from './service';
 import { IRegisterRequest } from './validator';
 
@@ -17,7 +18,12 @@ export default ({ authRedisConnection }: IApiOptions): RequestHandler =>
 
       const { email, password } = req.body;
 
-      await service({ email, password, userRepository: getCustomRepository(UserRepository) });
+      await service({
+        email,
+        password,
+        userRepository: getCustomRepository(UserRepository),
+        validationTokenRepository: getValidationTokenRepository(authRedisConnection),
+      });
 
       return res.send({ response: 'OK' }).status(HttpStatuses.OK);
     } catch (error) {

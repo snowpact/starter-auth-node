@@ -47,7 +47,7 @@ describe('refresh service', () => {
         userRepository,
         tokenRepository,
       });
-    } catch (error) {
+    } catch (error: any) {
       expect(error.code).toBe(ErrorCodes.INVALID_TOKEN_UNAUTHORIZED);
       expect(error.statusCode).toBe(HttpStatuses.UNAUTHORIZED);
     }
@@ -66,7 +66,7 @@ describe('refresh service', () => {
         userRepository,
         tokenRepository,
       });
-    } catch (error) {
+    } catch (error: any) {
       expect(error.code).toBe(ErrorCodes.INVALID_TOKEN_UNAUTHORIZED);
       expect(error.statusCode).toBe(HttpStatuses.UNAUTHORIZED);
     }
@@ -87,7 +87,7 @@ describe('refresh service', () => {
         userRepository,
         tokenRepository,
       });
-    } catch (error) {
+    } catch (error: any) {
       expect(error.code).toBe(ErrorCodes.USER_NOT_FOUND);
       expect(error.statusCode).toBe(HttpStatuses.NOT_FOUND);
     }
@@ -108,7 +108,7 @@ describe('refresh service', () => {
         userRepository,
         tokenRepository,
       });
-    } catch (error) {
+    } catch (error: any) {
       expect(error.code).toBe(ErrorCodes.USER_BLOCKED_UNAUTHORIZED);
       expect(error.statusCode).toBe(HttpStatuses.UNAUTHORIZED);
     }
@@ -129,7 +129,7 @@ describe('refresh service', () => {
         userRepository,
         tokenRepository,
       });
-    } catch (error) {
+    } catch (error: any) {
       expect(error.code).toBe(ErrorCodes.USER_NOT_ENABLED_UNAUTHORIZED);
       expect(error.statusCode).toBe(HttpStatuses.UNAUTHORIZED);
     }

@@ -101,7 +101,7 @@ describe('login service', () => {
         userRepository,
         tokenRepository,
       });
-    } catch (error) {
+    } catch (error: any) {
       expect(error.code).toBe(ErrorCodes.USER_NOT_ENABLED_UNAUTHORIZED);
       expect(error.statusCode).toBe(HttpStatuses.UNAUTHORIZED);
     }
