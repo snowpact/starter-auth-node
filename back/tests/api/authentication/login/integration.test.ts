@@ -10,7 +10,7 @@ import { HttpStatuses } from '../../../../src/core/httpStatuses';
 import { userEntityFactory } from '../../../helpers/factories/user.factory';
 import { ErrorCodes } from '../../../../src/api/shared/enums/errorCodes.enum';
 import { hashPassword } from '../../../../src/api/shared/services/password.service';
-import { REDIS_PREFIXES } from '../../../../src/repositories/tokens.repository';
+import { REDIS_PREFIXES } from '../../../../src/repositories/token.repository';
 import config from '../../../../src/loader/config';
 
 const redisHelper = buildRedisHelper();
@@ -56,8 +56,10 @@ describe('login route', () => {
     expect(resultFromDb).toHaveLength(1);
     expect(resultFromDb[0]).toMatch(`${REDIS_PREFIXES.REFRESH_TOKEN}:${userId}`);
 
-    const ttl = await authRedisConnection.ttl(resultFromDb[0]);
+    const tokens = await authRedisConnection.hgetall(`${REDIS_PREFIXES.REFRESH_TOKEN}:${userId}`);
+    expect(tokens[body.refreshToken]).toBeDefined();
 
+    const ttl = await authRedisConnection.ttl(resultFromDb[0]);
     expect(ttl).toBeLessThanOrEqual(config.REFRESH_TOKEN_LIFE);
   });
 

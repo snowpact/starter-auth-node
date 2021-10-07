@@ -10,26 +10,25 @@ export interface IStoreRefreshTokenOptions {
   userId: string;
 }
 
-export interface IRefreshTokensOptions {
+export interface IRefreshTokenOptions {
   userId: string;
   newRefreshToken: string;
-  tokensToRemove?: string[];
 }
 
-export interface IRemoveRefreshTokensOptions {
+export interface IRemoveRefreshTokenOptions {
   refreshToken: string;
   userId: string;
 }
 
-export interface ITokensRepository {
+export interface ITokenRepository {
   storeRefreshToken: (opt: IStoreRefreshTokenOptions) => Promise<[Error | null, any][]>;
-  removeRT: (refreshToken: IRemoveRefreshTokensOptions) => Promise<number | null>;
-  refreshTokens: (opt: IRefreshTokensOptions) => Promise<[Error | null, any][]>;
-  getAllRefreshTokensForUser: (userId: number) => Promise<string[]>;
+  removeRT: (refreshToken: IRemoveRefreshTokenOptions) => Promise<number | null>;
+  refreshTokens: (opt: IRefreshTokenOptions) => Promise<[Error | null, any][]>;
+  getAllRefreshTokensForUser: (userId: string) => Promise<string[]>;
   deleteTokensForUser: (userId: number, tokensToRemove: string[]) => Promise<number>;
 }
 
-export class TokensRepository implements ITokensRepository {
+export class TokenRepository implements ITokenRepository {
   constructor(private authenticationRedisConnection: Redis) {}
 
   private keyWithPrefix(prefix: REDIS_PREFIXES, ...args: (number | string)[]): string {
@@ -44,7 +43,7 @@ export class TokensRepository implements ITokensRepository {
 
     return this.authenticationRedisConnection
       .multi()
-      .set(key, refreshToken)
+      .hset(key, refreshToken, '')
       .expire(key, config.REFRESH_TOKEN_LIFE)
       .exec();
   }
@@ -52,7 +51,7 @@ export class TokensRepository implements ITokensRepository {
   public async removeRT({
     userId,
     refreshToken,
-  }: IRemoveRefreshTokensOptions): Promise<number | null> {
+  }: IRemoveRefreshTokenOptions): Promise<number | null> {
     const key = this.keyWithPrefix(REDIS_PREFIXES.REFRESH_TOKEN, userId);
 
     const [hget] = await this.authenticationRedisConnection
@@ -67,11 +66,11 @@ export class TokensRepository implements ITokensRepository {
   public refreshTokens({
     userId,
     newRefreshToken,
-  }: IRefreshTokensOptions): Promise<[Error | null, any][]> {
+  }: IRefreshTokenOptions): Promise<[Error | null, any][]> {
     const key = this.keyWithPrefix(REDIS_PREFIXES.REFRESH_TOKEN, userId);
     return this.authenticationRedisConnection
       .multi()
-      .set(key, newRefreshToken)
+      .hset(key, newRefreshToken, '')
       .expire(key, config.REFRESH_TOKEN_LIFE)
       .exec();
   }
@@ -87,7 +86,7 @@ export class TokensRepository implements ITokensRepository {
     return Promise.resolve(0);
   }
 
-  public async getAllRefreshTokensForUser(userId: number): Promise<string[]> {
+  public async getAllRefreshTokensForUser(userId: string): Promise<string[]> {
     const key = this.keyWithPrefix(REDIS_PREFIXES.REFRESH_TOKEN, userId);
     const refreshTokens = await this.authenticationRedisConnection.hkeys(key);
 
@@ -95,5 +94,5 @@ export class TokensRepository implements ITokensRepository {
   }
 }
 
-export const getTokensRepository = (redisConnection: Redis): ITokensRepository =>
-  new TokensRepository(redisConnection);
+export const getTokenRepository = (redisConnection: Redis): ITokenRepository =>
+  new TokenRepository(redisConnection);

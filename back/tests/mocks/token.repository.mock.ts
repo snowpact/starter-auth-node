@@ -1,4 +1,4 @@
-import { ITokensRepository } from '../../src/repositories/tokens.repository';
+import { ITokenRepository } from '../../src/repositories/token.repository';
 
 export interface ITokensRepositoryMockOptions {
   getAllRefreshTokensForUser?: string[];
@@ -8,7 +8,7 @@ export interface ITokensRepositoryMockOptions {
   removeRT?: number | null;
 }
 
-export default (options?: ITokensRepositoryMockOptions): ITokensRepository => ({
+export default (options?: ITokensRepositoryMockOptions): ITokenRepository => ({
   getAllRefreshTokensForUser: jest
     .fn()
     .mockResolvedValue(options?.getAllRefreshTokensForUser || []),

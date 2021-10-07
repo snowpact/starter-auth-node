@@ -1,12 +1,12 @@
-import usersRepositoryMock from '../../../mocks/users.repository.mock';
+import userRepositoryMock from '../../../mocks/user.repository.mock';
 import { userEntityFactory } from '../../../helpers/factories/user.factory';
 import service from '../../../../src/api/authentication/register/service';
 import { HttpStatuses } from '../../../../src/core/httpStatuses';
 import { ErrorCodes } from '../../../../src/api/shared/enums/errorCodes.enum';
 
-describe('getUser service', () => {
+describe('register service', () => {
   it('should register correctly', async () => {
-    const userRepository = usersRepositoryMock({});
+    const userRepository = userRepositoryMock({});
     const email = 'test@gmail.com';
 
     await service({
@@ -20,7 +20,7 @@ describe('getUser service', () => {
   });
   it('should register correctly', async () => {
     const user = userEntityFactory();
-    const userRepository = usersRepositoryMock({ getOneByEmail: user });
+    const userRepository = userRepositoryMock({ getOneByEmail: user });
 
     expect.assertions(4);
 

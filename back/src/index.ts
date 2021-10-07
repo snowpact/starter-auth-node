@@ -1,6 +1,6 @@
 import bootstrap from './loader';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { IAuthObject } from './core/utils/buildAuthObject';
+import { IAuthObject } from './core/jwt/AuthObject';
 import { ILogger } from './core/logger';
 
 declare global {

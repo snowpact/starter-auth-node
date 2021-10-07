@@ -3,22 +3,23 @@ import { getCustomRepository } from 'typeorm';
 
 import { IApiOptions } from '../..';
 import { HttpStatuses } from '../../../core/httpStatuses';
+import { checkAndReturnAuthAccessToken } from '../../../core/jwt/accessToken';
 import { ValidatedRequest } from '../../../core/utils';
 import { getTokenRepository } from '../../../repositories/token.repository';
 import UserRepository from '../../../repositories/user.repository';
 import service from './service';
-import { ILoginRequest } from './validator';
+import { IRefreshRequest } from './validator';
 
-type LoginRequest = ValidatedRequest<ILoginRequest>;
+type RefreshRequest = ValidatedRequest<IRefreshRequest>;
 
 export default ({ authRedisConnection }: IApiOptions): RequestHandler =>
-  async (req: LoginRequest, res: Response, next: NextFunction): Promise<Response | void> => {
+  async (req: RefreshRequest, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
-      const { email, password } = req.body;
+      const { refreshToken } = req.body;
 
       const response = await service({
-        email,
-        password,
+        refreshToken,
+        accessToken: checkAndReturnAuthAccessToken(req.headers.authorization),
         userRepository: getCustomRepository(UserRepository),
         tokenRepository: getTokenRepository(authRedisConnection),
       });

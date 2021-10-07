@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { ILogger } from '../logger';
-import { IAuthObject } from '../utils/buildAuthObject';
+import { IAuthObject } from '../jwt/AuthObject';
 
 export * from './appErrorHandler.middleware';
 export * from './attachLogger.middleware';

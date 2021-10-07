@@ -4,8 +4,8 @@ import { ErrorCodes } from '../enums/errorCodes.enum';
 
 export default (): IAppError =>
   buildError({
-    message: 'User not found',
-    publicMessage: 'User not found',
-    code: ErrorCodes.USER_NOT_FOUND,
-    statusCode: HttpStatuses.NOT_FOUND,
+    message: 'Unauthorized access',
+    publicMessage: 'Invalid token',
+    code: ErrorCodes.INVALID_TOKEN_UNAUTHORIZED,
+    statusCode: HttpStatuses.UNAUTHORIZED,
   });

@@ -1,12 +1,12 @@
-import { IGenerateJwtOptions } from '../../../../../src/api/shared/services/jwt/accessToken.service';
 import {
-  generateRefreshToken,
   decryptRefreshToken,
-} from '../../../../../src/api/shared/services/jwt/refreshToken.service';
+  generateRefreshToken,
+} from '../../../../../src/core/jwt/refreshToken';
+import { IAuthObject } from '../../../../../src/core/middlewares';
 
 describe('refresh token service', () => {
   it('should generate and decrypt refresh token correctly', async () => {
-    const refreshTokenObject: IGenerateJwtOptions = {
+    const refreshTokenObject: IAuthObject = {
       email: 'test@gmail.com',
       userId: '97161665-213e-4ecd-adaf-aea47ef9d8f5',
     };

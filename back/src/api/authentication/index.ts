@@ -2,6 +2,8 @@ import { Router } from 'express';
 
 import { IApiOptions } from '..';
 import login from './login';
+import refresh from './refresh';
 import register from './register';
 
-export default (options: IApiOptions): Router => Router().use(login(options), register(options));
+export default (options: IApiOptions): Router =>
+  Router().use(login(options), register(options), refresh(options));

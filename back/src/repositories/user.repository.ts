@@ -3,6 +3,7 @@ import UserEntity, { IUserEntity } from '../entities/user.entity';
 
 export interface IUserRepository {
   getOneByEmail(email: string): Promise<IUserEntity | undefined>;
+  getOneById(email: string): Promise<IUserEntity | undefined>;
   createUser(user: IUserEntity): Promise<void>;
 }
 
@@ -13,5 +14,8 @@ export default class UserRepository extends Repository<UserEntity> implements IU
   }
   getOneByEmail(email: string): Promise<IUserEntity | undefined> {
     return this.createQueryBuilder('user').where('user.email = :email', { email }).getOne();
+  }
+  getOneById(id: string): Promise<IUserEntity | undefined> {
+    return this.createQueryBuilder('user').where('user.id = :id', { id }).getOne();
   }
 }

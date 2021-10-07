@@ -8,6 +8,7 @@ export default async (): Promise<void> => {
   try {
     await initDatabase();
     const authRedisConnection = buildAuthRedis();
+    require('../');
 
     const app = buildApp({
       prefix: '/api',
