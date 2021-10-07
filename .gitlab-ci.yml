@@ -24,7 +24,7 @@ variables:
   POSTGRES_DB: postgres
   PGDATA: /var/lib/postgresql/data/db-files/
   ACCESS_TOKEN_SECRET: lkddsijdief56kdsjsd5ds5csdcdjcjkdlskjGHJEOKDLLKZMMSd6sfd5s4cd4cskdckdsnjfcdssk6966
-  REFRESH_TOKEN_SECRET: KDKZMMSd6sfdd4cskdckdsnjfds5csdcdjLcdssk6966lks5f6354dfddlskjGHJEO
+  REFRESH_TOKEN_SECRET: r3p67zIY4TlYzTvu1VC6r3mV54545x1j
   ACCESS_TOKEN_LIFE: 600
   REFRESH_TOKEN_LIFE: 600
 
