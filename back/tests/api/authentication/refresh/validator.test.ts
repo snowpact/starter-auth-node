@@ -1,7 +1,7 @@
 import { RefreshValidator } from '../../../../src/api/authentication/refresh/validator';
 import { validatorHelper } from '../../../../src/core/testHelpers';
 
-describe('login validator', () => {
+describe('refresh validator', () => {
   const validator = RefreshValidator;
   const { isValid, getParsedData } = validatorHelper(validator);
   it('should validate proper data', () => {

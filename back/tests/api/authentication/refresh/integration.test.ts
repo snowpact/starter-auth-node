@@ -7,17 +7,14 @@ import buildTestApp from '../../../helpers/testApp.helper';
 import refreshRouter from '../../../../src/api/authentication/refresh';
 import buildRedisHelper from '../../../helpers/testRedis.helper';
 import { HttpStatuses } from '../../../../src/core/httpStatuses';
-import { userEntityFactory } from '../../../helpers/factories/user.factory';
-import { hashPassword } from '../../../../src/api/shared/services/password.service';
 import {
   getTokenRepository,
   ITokenRepository,
   REDIS_PREFIXES,
 } from '../../../../src/repositories/token.repository';
 import config from '../../../../src/loader/config';
-import { generateAccessToken } from '../../../../src/core/jwt/accessToken';
-import { generateRefreshToken } from '../../../../src/core/jwt/refreshToken';
 import { ErrorCodes } from '../../../../src/api/shared/enums/errorCodes.enum';
+import { prepareContextUser } from '../../../prepareContext/user';
 
 const redisHelper = buildRedisHelper();
 const testDb = testDbManager();
@@ -45,15 +42,10 @@ describe('refresh route', () => {
   });
 
   test('should return success with code 200', async () => {
-    const userId = '8e339c8f-2187-46a9-8c30-aa15d3ebc330';
-    const password = 'password';
-    const hashedPassword = await hashPassword(password);
-    const user = userEntityFactory({ password: hashedPassword, id: userId });
-
-    await testDb.persistUser(user);
-    const accessToken = await generateAccessToken({ email: user.email, userId });
-    const refreshToken = generateRefreshToken({ email: user.email, userId });
-    await tokenRepository.storeRefreshToken({ refreshToken, userId });
+    const { user, accessToken, refreshToken } = await prepareContextUser({
+      testDb,
+      tokenRepository,
+    });
 
     const { status, body } = await request(testApp)
       .post('/api/refresh')
@@ -66,9 +58,9 @@ describe('refresh route', () => {
 
     const resultFromDb = await authRedisConnection.keys('*');
     expect(resultFromDb).toHaveLength(1);
-    expect(resultFromDb[0]).toMatch(`${REDIS_PREFIXES.REFRESH_TOKEN}:${userId}`);
+    expect(resultFromDb[0]).toMatch(`${REDIS_PREFIXES.REFRESH_TOKEN}:${user.id}`);
 
-    const tokens = await authRedisConnection.hgetall(`${REDIS_PREFIXES.REFRESH_TOKEN}:${userId}`);
+    const tokens = await authRedisConnection.hgetall(`${REDIS_PREFIXES.REFRESH_TOKEN}:${user.id}`);
     expect(tokens[body.refreshToken]).toBeDefined();
 
     const ttl = await authRedisConnection.ttl(resultFromDb[0]);
@@ -76,16 +68,12 @@ describe('refresh route', () => {
   });
 
   test('should return success with code 401 - invalid access token', async () => {
-    const userId = '8e339c8f-2187-46a9-8c30-aa15d3ebc330';
-    const password = 'password';
-    const hashedPassword = await hashPassword(password);
-    const user = userEntityFactory({ password: hashedPassword, id: userId });
-
-    await testDb.persistUser(user);
+    const { refreshToken } = await prepareContextUser({
+      testDb,
+      tokenRepository,
+    });
     const badAccessToken =
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
-    const refreshToken = generateRefreshToken({ email: user.email, userId });
-    await tokenRepository.storeRefreshToken({ refreshToken, userId });
 
     const { status, body } = await request(testApp)
       .post('/api/refresh')
@@ -97,14 +85,11 @@ describe('refresh route', () => {
   });
 
   test('should return success with code 401 - expired refresh token', async () => {
-    const userId = '8e339c8f-2187-46a9-8c30-aa15d3ebc330';
-    const password = 'password';
-    const hashedPassword = await hashPassword(password);
-    const user = userEntityFactory({ password: hashedPassword, id: userId });
-
-    await testDb.persistUser(user);
-    const accessToken = await generateAccessToken({ email: user.email, userId });
-    const refreshToken = generateRefreshToken({ email: user.email, userId });
+    const { accessToken, refreshToken } = await prepareContextUser({
+      testDb,
+      tokenRepository,
+      expiredRefreshToken: true,
+    });
 
     const { status, body } = await request(testApp)
       .post('/api/refresh')
@@ -116,14 +101,11 @@ describe('refresh route', () => {
   });
 
   test('should return success with code 404 - user not found', async () => {
-    const userId = '8e339c8f-2187-46a9-8c30-aa15d3ebc330';
-    const password = 'password';
-    const hashedPassword = await hashPassword(password);
-    const user = userEntityFactory({ password: hashedPassword, id: userId });
-
-    const accessToken = await generateAccessToken({ email: user.email, userId });
-    const refreshToken = generateRefreshToken({ email: user.email, userId });
-    await tokenRepository.storeRefreshToken({ refreshToken, userId });
+    const { accessToken, refreshToken } = await prepareContextUser({
+      testDb,
+      tokenRepository,
+      saveUser: false,
+    });
 
     const { status, body } = await request(testApp)
       .post('/api/refresh')
@@ -135,15 +117,11 @@ describe('refresh route', () => {
   });
 
   test('should return success with code 401 - user blocked', async () => {
-    const userId = '8e339c8f-2187-46a9-8c30-aa15d3ebc330';
-    const password = 'password';
-    const hashedPassword = await hashPassword(password);
-    const user = userEntityFactory({ password: hashedPassword, id: userId, blocked: true });
-
-    await testDb.persistUser(user);
-    const accessToken = await generateAccessToken({ email: user.email, userId });
-    const refreshToken = generateRefreshToken({ email: user.email, userId });
-    await tokenRepository.storeRefreshToken({ refreshToken, userId });
+    const { accessToken, refreshToken } = await prepareContextUser({
+      testDb,
+      tokenRepository,
+      blocked: true,
+    });
 
     const { status, body } = await request(testApp)
       .post('/api/refresh')
@@ -155,15 +133,11 @@ describe('refresh route', () => {
   });
 
   test('should return success with code 401 - user account not enabled', async () => {
-    const userId = '8e339c8f-2187-46a9-8c30-aa15d3ebc330';
-    const password = 'password';
-    const hashedPassword = await hashPassword(password);
-    const user = userEntityFactory({ password: hashedPassword, id: userId, enabled: false });
-
-    await testDb.persistUser(user);
-    const accessToken = await generateAccessToken({ email: user.email, userId });
-    const refreshToken = generateRefreshToken({ email: user.email, userId });
-    await tokenRepository.storeRefreshToken({ refreshToken, userId });
+    const { accessToken, refreshToken } = await prepareContextUser({
+      testDb,
+      tokenRepository,
+      enabled: false,
+    });
 
     const { status, body } = await request(testApp)
       .post('/api/refresh')

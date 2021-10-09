@@ -6,6 +6,7 @@ import { HttpStatuses } from '../../../core/httpStatuses';
 import { ValidatedRequest } from '../../../core/utils';
 import UserRepository from '../../../repositories/user.repository';
 import { getValidationTokenRepository } from '../../../repositories/validationToken.repository';
+import serializer from './serializer';
 import service from './service';
 import { IRegisterRequest } from './validator';
 
@@ -25,7 +26,9 @@ export default ({ authRedisConnection }: IApiOptions): RequestHandler =>
         validationTokenRepository: getValidationTokenRepository(authRedisConnection),
       });
 
-      return res.send({ response: 'OK' }).status(HttpStatuses.OK);
+      const response = serializer();
+
+      return res.send(response).status(HttpStatuses.OK);
     } catch (error) {
       return next(error);
     }
