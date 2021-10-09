@@ -10,4 +10,5 @@ export default (options: IUserMockOptions): IUserRepository => ({
   createUser: jest.fn().mockResolvedValue(undefined),
   getOneByEmail: jest.fn().mockResolvedValue(options.getOneByEmail),
   getOneById: jest.fn().mockResolvedValue(options.getOneById),
+  validateUserAccount: jest.fn().mockResolvedValue(undefined),
 });

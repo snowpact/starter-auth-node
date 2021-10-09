@@ -4,6 +4,7 @@ import { IApiOptions } from '..';
 import login from './login';
 import refresh from './refresh';
 import register from './register';
+import validateEmail from './validateEmail';
 
 export default (options: IApiOptions): Router =>
-  Router().use(login(options), register(options), refresh(options));
+  Router().use(login(options), register(options), refresh(options), validateEmail(options));

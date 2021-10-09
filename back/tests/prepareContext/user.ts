@@ -1,4 +1,3 @@
-import { v4 as uuid4 } from 'uuid';
 import { hashPassword } from '../../src/api/shared/services/password.service';
 import { generateAccessToken } from '../../src/core/jwt/accessToken';
 import { generateRefreshToken } from '../../src/core/jwt/refreshToken';
@@ -62,7 +61,7 @@ const prepareValidationToken = async ({
   if (!validationTokenRepository) {
     return null;
   }
-  const validationToken = uuid4();
+  const validationToken = 'cdd994fb-06f1-48ff-ac4a-7a3cd4e34406';
   await validationTokenRepository.addEmailValidationToken({ validationToken, userId });
 
   return validationToken;
