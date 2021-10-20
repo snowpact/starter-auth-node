@@ -67,6 +67,9 @@ describe('register route', () => {
     const key = resultFromDb[0];
     const prefix = key.split(':')[0];
     expect(prefix).toMatch(REDIS_PREFIXES.EMAIL_VALIDATION_TOKEN);
+
+    const storedUserId = await authRedisConnection.get(key);
+    expect(storedUserId).toEqual(storedUser?.id);
   });
 
   test('should return error with code 400 - user already exist', async () => {

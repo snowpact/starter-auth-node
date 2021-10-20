@@ -17,7 +17,12 @@ interface IGetAndCheckUserByIdOptions {
   error?: IAppError;
 }
 
-const checkUser = (user?: IUserEntity, error = badCredentialsError()): IUserEntity => {
+interface ICheckUserOptions {
+  user?: IUserEntity;
+  error?: IAppError;
+}
+
+export const checkUser = ({ user, error }: ICheckUserOptions): IUserEntity => {
   if (!user) {
     throw error;
   }
@@ -40,7 +45,7 @@ export const getAndCheckUserByEmail = async ({
 }: IGetAndCheckUserByEmailOptions): Promise<IUserEntity> => {
   const user = await userRepository.getOneByEmail(email);
 
-  return checkUser(user, error);
+  return checkUser({ user, error });
 };
 
 export const getAndCheckUserById = async ({
@@ -50,5 +55,5 @@ export const getAndCheckUserById = async ({
 }: IGetAndCheckUserByIdOptions): Promise<IUserEntity> => {
   const user = await userRepository.getOneById(userId);
 
-  return checkUser(user, error);
+  return checkUser({ user, error });
 };

@@ -1,0 +1,25 @@
+{
+  "name": "snowpact-auth",
+  "version": "0.0.1",
+  "dependencies": {},
+  "devDependencies": {
+    "husky": "^4.2.3",
+    "npm-run-all": "^4.1.5"
+  },
+  "scripts": {
+    "lint:front": "yarn --cwd ./front lint",
+    "lint:back": "yarn --cwd ./back lint",
+    "lint": "npm-run-all --parallel lint:back -c"
+  },
+  "husky": {
+    "hooks": {
+      "pre-push": "yarn lint"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@gitlab.com:snowpact/snowpact/snowpact-auth.git"
+  },
+  "author": "SnowPact",
+  "license": "ISC"
+}
