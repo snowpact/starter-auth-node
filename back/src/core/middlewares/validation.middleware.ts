@@ -128,7 +128,7 @@ export function buildValidationMiddleware(
       request.file = validationResult.file;
 
       return next();
-    } catch (error) {
+    } catch (error: any) {
       if (error.isJoi) {
         const validationResponse = buildErrorResponse(error, options);
 

@@ -5,6 +5,7 @@ import askUpdateEmail from './askUpdateEmail';
 import login from './login';
 import refresh from './refresh';
 import register from './register';
+import updateEmail from './updateEmail';
 import validateEmail from './validateEmail';
 
 export default (options: IApiOptions): Router =>
@@ -14,4 +15,5 @@ export default (options: IApiOptions): Router =>
     refresh(options),
     validateEmail(options),
     askUpdateEmail(options),
+    updateEmail(options),
   );

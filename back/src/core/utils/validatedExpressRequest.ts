@@ -4,7 +4,7 @@ import { Request, RequestHandler } from 'express';
 export type ValidatedRequest<RequestTypes> = Omit<Request, 'params' | 'body' | 'query'> &
   RequestTypes;
 
-type RequestHandlerWithCustomRequestType = (
+export type RequestHandlerWithCustomRequestType = (
   ...params: Parameters<RequestHandler<any, any, any, any>>
 ) => any;
 

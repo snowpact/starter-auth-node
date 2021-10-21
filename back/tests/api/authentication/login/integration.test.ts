@@ -57,6 +57,17 @@ describe('login route', () => {
     expect(ttl).toBeLessThanOrEqual(config.REFRESH_TOKEN_LIFE);
   });
 
+  test('should return error with code 404 - user not found', async () => {
+    const { user, clearPassword } = await prepareContextUser({ testDb, saveUser: false });
+
+    const { status, body } = await request(testApp)
+      .post('/api/login')
+      .send({ email: user.email, password: clearPassword });
+
+    expect(body.code).toEqual(ErrorCodes.BAD_CREDENTIALS);
+    expect(status).toBe(HttpStatuses.UNAUTHORIZED);
+  });
+
   test('should return error with code 401 - user blocked', async () => {
     const { user, clearPassword } = await prepareContextUser({ testDb, blocked: true });
 

@@ -1,9 +1,9 @@
-import { Response, NextFunction, RequestHandler } from 'express';
+import { Response, NextFunction } from 'express';
 import { getCustomRepository } from 'typeorm';
 
 import { IApiOptions } from '../..';
 import { HttpStatuses } from '../../../core/httpStatuses';
-import { ValidatedRequest } from '../../../core/utils';
+import { RequestHandlerWithCustomRequestType, ValidatedRequest } from '../../../core/utils';
 import UserRepository from '../../../repositories/user.repository';
 import { getValidationTokenRepository } from '../../../repositories/validationToken.repository';
 import serializer from './serializer';
@@ -12,7 +12,7 @@ import { IRegisterRequest } from './validator';
 
 type RegisterRequest = ValidatedRequest<IRegisterRequest>;
 
-export default ({ authRedisConnection }: IApiOptions): RequestHandler =>
+export default ({ authRedisConnection }: IApiOptions): RequestHandlerWithCustomRequestType =>
   async (req: RegisterRequest, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
       await authRedisConnection.multi().exec();

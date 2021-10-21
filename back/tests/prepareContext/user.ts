@@ -14,7 +14,11 @@ interface IPrepareContextUserOptions {
   saveUser?: boolean;
   blocked?: boolean;
   enabled?: boolean;
+  userId?: string;
   expiredRefreshToken?: boolean;
+  addRefreshToken?: boolean;
+  addEmailValidationToken?: boolean;
+  addUpdateEmailToken?: boolean;
 }
 
 interface IPrepareContextUserResponse {
@@ -23,27 +27,37 @@ interface IPrepareContextUserResponse {
   accessToken: string;
   refreshToken: string | null;
   validationToken: string | null;
+  updateEmailToken: string | null;
 }
 
 interface IPrepareRefreshTokenOptions {
   userId: string;
   email: string;
+  addRefreshToken: boolean;
   tokenRepository?: ITokenRepository;
   expired: boolean;
 }
 
 interface IPrepareValidationTokenOptions {
   userId: string;
+  addEmailValidationToken: boolean;
+  validationTokenRepository?: IValidationTokenRepository;
+}
+
+interface IPrepareUpdateEmailTokenOptions {
+  userId: string;
+  addUpdateEmailToken: boolean;
   validationTokenRepository?: IValidationTokenRepository;
 }
 
 const prepareRefreshToken = async ({
   email,
   userId,
+  addRefreshToken,
   tokenRepository,
   expired,
 }: IPrepareRefreshTokenOptions): Promise<string | null> => {
-  if (!tokenRepository) {
+  if (!addRefreshToken || !tokenRepository) {
     return null;
   }
   const refreshToken = generateRefreshToken({ email, userId });
@@ -56,15 +70,30 @@ const prepareRefreshToken = async ({
 
 const prepareValidationToken = async ({
   userId,
+  addEmailValidationToken,
   validationTokenRepository,
 }: IPrepareValidationTokenOptions): Promise<string | null> => {
-  if (!validationTokenRepository) {
+  if (!addEmailValidationToken || !validationTokenRepository) {
     return null;
   }
-  const validationToken = 'cdd994fb-06f1-48ff-ac4a-7a3cd4e34406';
-  await validationTokenRepository.addEmailValidationToken({ validationToken, userId });
+  const token = 'cdd994fb-06f1-48ff-ac4a-7a3cd4e34406';
+  await validationTokenRepository.addEmailValidationToken({ token, userId });
 
-  return validationToken;
+  return token;
+};
+
+const prepareUpdateEmailToken = async ({
+  userId,
+  addUpdateEmailToken,
+  validationTokenRepository,
+}: IPrepareUpdateEmailTokenOptions): Promise<string | null> => {
+  if (!addUpdateEmailToken || !validationTokenRepository) {
+    return null;
+  }
+  const token = 'cdd994fb-06f1-48ff-ac4a-7a3cd4e34406';
+  await validationTokenRepository.addEmailUpdateToken({ userId, token });
+
+  return token;
 };
 
 export const prepareContextUser = async ({
@@ -74,9 +103,12 @@ export const prepareContextUser = async ({
   blocked = false,
   enabled = true,
   saveUser = true,
+  userId = '8e339c8f-2187-46a9-8c30-aa15d3ebc330',
   expiredRefreshToken = false,
+  addRefreshToken = false,
+  addEmailValidationToken = false,
+  addUpdateEmailToken = false,
 }: IPrepareContextUserOptions): Promise<IPrepareContextUserResponse> => {
-  const userId = '8e339c8f-2187-46a9-8c30-aa15d3ebc330';
   const password = 'Password95';
   const hashedPassword = await hashPassword(password);
   const user = userEntityFactory({ password: hashedPassword, id: userId, blocked, enabled });
@@ -88,10 +120,20 @@ export const prepareContextUser = async ({
   const refreshToken = await prepareRefreshToken({
     email: user.email,
     userId,
+    addRefreshToken,
     tokenRepository,
     expired: expiredRefreshToken,
   });
-  const validationToken = await prepareValidationToken({ userId, validationTokenRepository });
+  const validationToken = await prepareValidationToken({
+    userId,
+    addEmailValidationToken,
+    validationTokenRepository,
+  });
+  const updateEmailToken = await prepareUpdateEmailToken({
+    userId,
+    addUpdateEmailToken,
+    validationTokenRepository,
+  });
 
   return {
     user,
@@ -99,5 +141,6 @@ export const prepareContextUser = async ({
     accessToken,
     refreshToken,
     validationToken,
+    updateEmailToken,
   };
 };

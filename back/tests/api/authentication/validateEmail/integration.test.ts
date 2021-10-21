@@ -45,6 +45,7 @@ describe('validate email route', () => {
     const { validationToken } = await prepareContextUser({
       testDb,
       validationTokenRepository,
+      addEmailValidationToken: true,
       enabled: false,
     });
 
@@ -63,7 +64,7 @@ describe('validate email route', () => {
     const { validationToken, user } = await prepareContextUser({
       testDb,
       validationTokenRepository,
-      enabled: false,
+      addEmailValidationToken: true,
     });
     const badValidationToken = 'b605b1d6-9add-4905-863d-de17a0c05ac5';
 
@@ -91,6 +92,7 @@ describe('validate email route', () => {
     const { validationToken } = await prepareContextUser({
       testDb,
       validationTokenRepository,
+      addEmailValidationToken: true,
       saveUser: false,
       enabled: false,
     });
@@ -107,6 +109,7 @@ describe('validate email route', () => {
     const { validationToken } = await prepareContextUser({
       testDb,
       validationTokenRepository,
+      addEmailValidationToken: true,
       blocked: true,
       enabled: false,
     });

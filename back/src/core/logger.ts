@@ -108,7 +108,7 @@ export class Logger implements ILogger {
     try {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       return redact(data, SECRET_FIELDS, '[Redacted]');
-    } catch (error) {
+    } catch (error: any) {
       if (error.message === 'Unsupported value for redaction') {
         return data;
       }

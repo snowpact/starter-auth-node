@@ -10,7 +10,12 @@ export enum REDIS_PREFIXES {
 }
 
 export interface IValidationTokenOptions {
-  validationToken: string;
+  token: string;
+  userId: string;
+}
+
+export interface IUpdateEmailTokenOptions {
+  token: string;
   userId: string;
 }
 
@@ -19,7 +24,7 @@ export interface IValidationTokenRepository {
   getEmailValidationToken: (token: string) => Promise<string | null>;
   deleteEmailValidationToken: (token: string) => Promise<number>;
 
-  addEmailUpdateToken: (userId: string, token: string) => Promise<'OK'>;
+  addEmailUpdateToken: (updateEmailTokenOptions: IUpdateEmailTokenOptions) => Promise<'OK'>;
   getEmailUpdateToken: (token: string) => Promise<string | null>;
   deleteEmailUpdateToken: (token: string) => Promise<number>;
 }
@@ -31,12 +36,9 @@ export class ValidationTokenRepository implements IValidationTokenRepository {
     return [prefix, ...args].join(':');
   }
 
-  public addEmailValidationToken({
-    validationToken,
-    userId,
-  }: IValidationTokenOptions): Promise<'OK'> {
+  public addEmailValidationToken({ token, userId }: IValidationTokenOptions): Promise<'OK'> {
     return this.authenticationRedisConnection.setex(
-      this.keyWithPrefix(REDIS_PREFIXES.EMAIL_VALIDATION_TOKEN, validationToken),
+      this.keyWithPrefix(REDIS_PREFIXES.EMAIL_VALIDATION_TOKEN, token),
       ONE_DAY_IN_SECONDS,
       userId,
     );
@@ -54,7 +56,7 @@ export class ValidationTokenRepository implements IValidationTokenRepository {
     );
   }
 
-  public addEmailUpdateToken(userId: string, token: string): Promise<'OK'> {
+  public addEmailUpdateToken({ userId, token }: IUpdateEmailTokenOptions): Promise<'OK'> {
     return this.authenticationRedisConnection.setex(
       this.keyWithPrefix(REDIS_PREFIXES.EMAIL_UPDATE_TOKEN, token),
       ONE_DAY_IN_SECONDS,

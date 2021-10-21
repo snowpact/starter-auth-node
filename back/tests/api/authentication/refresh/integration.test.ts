@@ -45,6 +45,7 @@ describe('refresh route', () => {
     const { user, accessToken, refreshToken } = await prepareContextUser({
       testDb,
       tokenRepository,
+      addRefreshToken: true,
     });
 
     const { status, body } = await request(testApp)
@@ -71,6 +72,7 @@ describe('refresh route', () => {
     const { refreshToken } = await prepareContextUser({
       testDb,
       tokenRepository,
+      addRefreshToken: true,
     });
     const badAccessToken =
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
@@ -88,6 +90,7 @@ describe('refresh route', () => {
     const { accessToken, refreshToken } = await prepareContextUser({
       testDb,
       tokenRepository,
+      addRefreshToken: true,
       expiredRefreshToken: true,
     });
 
@@ -105,6 +108,7 @@ describe('refresh route', () => {
       testDb,
       tokenRepository,
       saveUser: false,
+      addRefreshToken: true,
     });
 
     const { status, body } = await request(testApp)
@@ -121,6 +125,7 @@ describe('refresh route', () => {
       testDb,
       tokenRepository,
       blocked: true,
+      addRefreshToken: true,
     });
 
     const { status, body } = await request(testApp)
@@ -137,6 +142,7 @@ describe('refresh route', () => {
       testDb,
       tokenRepository,
       enabled: false,
+      addRefreshToken: true,
     });
 
     const { status, body } = await request(testApp)

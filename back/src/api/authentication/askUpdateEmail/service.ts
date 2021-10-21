@@ -23,7 +23,7 @@ export default async ({
   });
 
   const token = uuid4();
-  validationTokenRepository.addEmailUpdateToken(userId, token);
+  validationTokenRepository.addEmailUpdateToken({ userId, token });
   const urlValidationToken = token;
 
   try {

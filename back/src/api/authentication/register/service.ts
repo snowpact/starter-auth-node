@@ -37,9 +37,9 @@ export default async ({
 
   await userRepository.createUser(user);
 
-  const validationToken = uuid4();
-  await validationTokenRepository.addEmailValidationToken({ userId: user.id, validationToken });
-  const urlValidationToken = validationToken;
+  const token = uuid4();
+  await validationTokenRepository.addEmailValidationToken({ userId: user.id, token });
+  const urlValidationToken = token;
 
   try {
     connectAndSendEmail({

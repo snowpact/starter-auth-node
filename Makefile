@@ -59,7 +59,7 @@ pull-docker-images:
 .PHONY: start
 #%% Create and start containers
 start:
-	$(DOCKER_COMPOSE) up --remove-orphans -d backend-api-sp-auth mailhog-sp-auth
+	$(DOCKER_COMPOSE) up --remove-orphans -d backend-api-sp-auth mailhog-sp-auth adminer
 
 .PHONY: stop
 #%% stop containers

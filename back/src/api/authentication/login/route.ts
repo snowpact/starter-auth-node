@@ -1,9 +1,9 @@
-import { Response, NextFunction, RequestHandler } from 'express';
+import { Response, NextFunction } from 'express';
 import { getCustomRepository } from 'typeorm';
 
 import { IApiOptions } from '../..';
 import { HttpStatuses } from '../../../core/httpStatuses';
-import { ValidatedRequest } from '../../../core/utils';
+import { RequestHandlerWithCustomRequestType, ValidatedRequest } from '../../../core/utils';
 import { getTokenRepository } from '../../../repositories/token.repository';
 import UserRepository from '../../../repositories/user.repository';
 import service from './service';
@@ -11,7 +11,7 @@ import { ILoginRequest } from './validator';
 
 type LoginRequest = ValidatedRequest<ILoginRequest>;
 
-export default ({ authRedisConnection }: IApiOptions): RequestHandler =>
+export default ({ authRedisConnection }: IApiOptions): RequestHandlerWithCustomRequestType =>
   async (req: LoginRequest, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
       const { email, password } = req.body;

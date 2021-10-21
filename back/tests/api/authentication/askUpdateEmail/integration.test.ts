@@ -44,9 +44,7 @@ describe('askUpdateEmail route', () => {
   });
 
   test('should return success with code 200', async () => {
-    const { user, accessToken } = await prepareContextUser({
-      testDb,
-    });
+    const { user, accessToken } = await prepareContextUser({ testDb });
 
     const { status, body } = await request(testApp)
       .post('/api/email/ask')
