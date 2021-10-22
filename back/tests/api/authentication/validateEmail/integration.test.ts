@@ -50,7 +50,7 @@ describe('validate email route', () => {
     });
 
     const { status, body } = await request(testApp)
-      .post('/api/validate/email')
+      .post('/api/email/validate')
       .send({ token: validationToken });
 
     expect(status).toBe(HttpStatuses.OK);
@@ -69,7 +69,7 @@ describe('validate email route', () => {
     const badValidationToken = 'b605b1d6-9add-4905-863d-de17a0c05ac5';
 
     const { status, body } = await request(testApp)
-      .post('/api/validate/email')
+      .post('/api/email/validate')
       .send({ token: badValidationToken });
 
     expect(body.code).toEqual(ErrorCodes.INVALID_TOKEN_UNAUTHORIZED);
@@ -98,7 +98,7 @@ describe('validate email route', () => {
     });
 
     const { status, body } = await request(testApp)
-      .post('/api/validate/email')
+      .post('/api/email/validate')
       .send({ token: validationToken });
 
     expect(body.code).toEqual(ErrorCodes.USER_NOT_FOUND);
@@ -115,7 +115,7 @@ describe('validate email route', () => {
     });
 
     const { status, body } = await request(testApp)
-      .post('/api/validate/email')
+      .post('/api/email/validate')
       .send({ token: validationToken });
 
     expect(body.code).toEqual(ErrorCodes.USER_BLOCKED_UNAUTHORIZED);

@@ -1,11 +1,11 @@
 import { ResponseCodes } from '../../shared/enums/responseCodes.enum';
 
-export interface IValidateEmailResponse {
+export interface IAskUpdateEmailResponse {
   message: string;
   code: ResponseCodes;
 }
 
-export default (): IValidateEmailResponse => ({
+export default (): IAskUpdateEmailResponse => ({
   message: 'Email sent for validate new email',
   code: ResponseCodes.USER_ASK_UPDATE_EMAIL,
 });

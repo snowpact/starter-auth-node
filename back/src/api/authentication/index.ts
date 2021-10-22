@@ -1,6 +1,7 @@
 import { Router } from 'express';
 
 import { IApiOptions } from '..';
+import askResetPassword from './askResetPassword';
 import askUpdateEmail from './askUpdateEmail';
 import login from './login';
 import refresh from './refresh';
@@ -13,7 +14,8 @@ export default (options: IApiOptions): Router =>
     login(options),
     register(options),
     refresh(options),
-    validateEmail(options),
     askUpdateEmail(options),
+    askResetPassword(options),
+    validateEmail(options),
     updateEmail(options),
   );

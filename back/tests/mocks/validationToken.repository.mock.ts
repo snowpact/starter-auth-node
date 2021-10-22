@@ -3,6 +3,7 @@ import { IValidationTokenRepository } from '../../src/repositories/validationTok
 export interface ITokensRepositoryMockOptions {
   getEmailValidationToken?: string;
   getEmailUpdateToken?: string;
+  getResetPasswordToken?: string;
 }
 
 export default (options?: ITokensRepositoryMockOptions): IValidationTokenRepository => ({
@@ -12,4 +13,7 @@ export default (options?: ITokensRepositoryMockOptions): IValidationTokenReposit
   addEmailUpdateToken: jest.fn().mockResolvedValue('OK'),
   getEmailUpdateToken: jest.fn().mockResolvedValue(options?.getEmailUpdateToken),
   deleteEmailUpdateToken: jest.fn().mockResolvedValue(1),
+  addResetPasswordToken: jest.fn().mockResolvedValue('OK'),
+  getResetPasswordToken: jest.fn().mockResolvedValue(options?.getResetPasswordToken),
+  deleteResetPasswordToken: jest.fn().mockResolvedValue(1),
 });

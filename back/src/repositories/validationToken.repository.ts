@@ -9,70 +9,76 @@ export enum REDIS_PREFIXES {
   RESET_PASSWORD_TOKEN = 'resetPasswordToken',
 }
 
-export interface IValidationTokenOptions {
-  token: string;
-  userId: string;
-}
-
-export interface IUpdateEmailTokenOptions {
+export interface IAddTokenOptions {
   token: string;
   userId: string;
 }
 
 export interface IValidationTokenRepository {
-  addEmailValidationToken: (validationTokenOptions: IValidationTokenOptions) => Promise<'OK'>;
+  addEmailValidationToken: (validationTokenOptions: IAddTokenOptions) => Promise<'OK'>;
   getEmailValidationToken: (token: string) => Promise<string | null>;
   deleteEmailValidationToken: (token: string) => Promise<number>;
 
-  addEmailUpdateToken: (updateEmailTokenOptions: IUpdateEmailTokenOptions) => Promise<'OK'>;
+  addEmailUpdateToken: (updateEmailTokenOptions: IAddTokenOptions) => Promise<'OK'>;
   getEmailUpdateToken: (token: string) => Promise<string | null>;
   deleteEmailUpdateToken: (token: string) => Promise<number>;
+
+  addResetPasswordToken: (resetPasswordTokenOptions: IAddTokenOptions) => Promise<'OK'>;
+  getResetPasswordToken: (token: string) => Promise<string | null>;
+  deleteResetPasswordToken: (token: string) => Promise<number>;
 }
 
 export class ValidationTokenRepository implements IValidationTokenRepository {
   constructor(private authenticationRedisConnection: Redis) {}
 
+  private addToken({ token, userId }: IAddTokenOptions, prefix: REDIS_PREFIXES): Promise<'OK'> {
+    return this.authenticationRedisConnection.setex(
+      this.keyWithPrefix(prefix, token),
+      ONE_DAY_IN_SECONDS,
+      userId,
+    );
+  }
+
+  private getToken(token: string, prefix: REDIS_PREFIXES): Promise<string | null> {
+    return this.authenticationRedisConnection.get(this.keyWithPrefix(prefix, token));
+  }
+
+  private deleteToken(token: string, prefix: REDIS_PREFIXES): Promise<number> {
+    return this.authenticationRedisConnection.del(this.keyWithPrefix(prefix, token));
+  }
+
   private keyWithPrefix(prefix: REDIS_PREFIXES, ...args: (number | string)[]): string {
     return [prefix, ...args].join(':');
   }
 
-  public addEmailValidationToken({ token, userId }: IValidationTokenOptions): Promise<'OK'> {
-    return this.authenticationRedisConnection.setex(
-      this.keyWithPrefix(REDIS_PREFIXES.EMAIL_VALIDATION_TOKEN, token),
-      ONE_DAY_IN_SECONDS,
-      userId,
-    );
+  public addEmailValidationToken(validationTokenOptions: IAddTokenOptions): Promise<'OK'> {
+    return this.addToken(validationTokenOptions, REDIS_PREFIXES.EMAIL_VALIDATION_TOKEN);
+  }
+  public getEmailValidationToken(token: string): Promise<string | null> {
+    return this.getToken(token, REDIS_PREFIXES.EMAIL_VALIDATION_TOKEN);
+  }
+  public deleteEmailValidationToken(token: string): Promise<number> {
+    return this.deleteToken(token, REDIS_PREFIXES.EMAIL_VALIDATION_TOKEN);
   }
 
-  public getEmailValidationToken(validationToken: string): Promise<string | null> {
-    return this.authenticationRedisConnection.get(
-      this.keyWithPrefix(REDIS_PREFIXES.EMAIL_VALIDATION_TOKEN, validationToken),
-    );
-  }
-
-  public deleteEmailValidationToken(validationToken: string): Promise<number> {
-    return this.authenticationRedisConnection.del(
-      this.keyWithPrefix(REDIS_PREFIXES.EMAIL_VALIDATION_TOKEN, validationToken),
-    );
-  }
-
-  public addEmailUpdateToken({ userId, token }: IUpdateEmailTokenOptions): Promise<'OK'> {
-    return this.authenticationRedisConnection.setex(
-      this.keyWithPrefix(REDIS_PREFIXES.EMAIL_UPDATE_TOKEN, token),
-      ONE_DAY_IN_SECONDS,
-      userId,
-    );
+  public addEmailUpdateToken(updateEmailTokenOptions: IAddTokenOptions): Promise<'OK'> {
+    return this.addToken(updateEmailTokenOptions, REDIS_PREFIXES.EMAIL_UPDATE_TOKEN);
   }
   public getEmailUpdateToken(token: string): Promise<string | null> {
-    return this.authenticationRedisConnection.get(
-      this.keyWithPrefix(REDIS_PREFIXES.EMAIL_UPDATE_TOKEN, token),
-    );
+    return this.getToken(token, REDIS_PREFIXES.EMAIL_UPDATE_TOKEN);
+  }
+  public deleteEmailUpdateToken(token: string): Promise<number> {
+    return this.deleteToken(token, REDIS_PREFIXES.EMAIL_UPDATE_TOKEN);
   }
 
-  public deleteEmailUpdateToken(token: string): Promise<number> {
-    return this.authenticationRedisConnection.del(
-      this.keyWithPrefix(REDIS_PREFIXES.EMAIL_UPDATE_TOKEN, token),
-    );
+  public addResetPasswordToken(resetPasswordTokenOptions: IAddTokenOptions): Promise<'OK'> {
+    return this.addToken(resetPasswordTokenOptions, REDIS_PREFIXES.RESET_PASSWORD_TOKEN);
+  }
+  public getResetPasswordToken(token: string): Promise<string | null> {
+    return this.getToken(token, REDIS_PREFIXES.RESET_PASSWORD_TOKEN);
+  }
+  public deleteResetPasswordToken(token: string): Promise<number> {
+    return this.deleteToken(token, REDIS_PREFIXES.RESET_PASSWORD_TOKEN);
   }
 }
 
