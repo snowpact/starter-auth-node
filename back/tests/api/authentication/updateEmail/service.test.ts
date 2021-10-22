@@ -6,6 +6,8 @@ import { hashPassword } from '../../../../src/api/shared/services/password.servi
 import { ErrorCodes } from '../../../../src/api/shared/enums/errorCodes.enum';
 import { HttpStatuses } from '../../../../src/core/httpStatuses';
 
+const mailerMock = jest.fn();
+
 describe('update email service', () => {
   it('should update email correctly', async () => {
     const token = '9a0948fe-df90-4141-87e4-995ab7b790cf';
@@ -24,6 +26,7 @@ describe('update email service', () => {
       password,
       userRepository,
       validationTokenRepository,
+      mailer: mailerMock,
     });
 
     expect(userRepository.getOneById).toBeCalledWith(user.id);
@@ -51,6 +54,7 @@ describe('update email service', () => {
         password,
         userRepository,
         validationTokenRepository,
+        mailer: mailerMock,
       });
       console.log('testos');
     } catch (error: any) {
@@ -78,6 +82,7 @@ describe('update email service', () => {
         password,
         userRepository,
         validationTokenRepository,
+        mailer: mailerMock,
       });
       console.log('testos');
     } catch (error: any) {
@@ -106,6 +111,7 @@ describe('update email service', () => {
         password: badPassword,
         userRepository,
         validationTokenRepository,
+        mailer: mailerMock,
       });
       console.log('testos');
     } catch (error: any) {
@@ -133,6 +139,7 @@ describe('update email service', () => {
         password,
         userRepository,
         validationTokenRepository,
+        mailer: mailerMock,
       });
       console.log('testos');
     } catch (error: any) {
@@ -160,6 +167,7 @@ describe('update email service', () => {
         password,
         userRepository,
         validationTokenRepository,
+        mailer: mailerMock,
       });
       console.log('testos');
     } catch (error: any) {
@@ -187,6 +195,7 @@ describe('update email service', () => {
         password,
         userRepository,
         validationTokenRepository,
+        mailer: mailerMock,
       });
       console.log('testos');
     } catch (error: any) {

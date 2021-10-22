@@ -11,12 +11,15 @@ import { prepareContextUser } from '../../../prepareContext/user';
 import {
   getValidationTokenRepository,
   IValidationTokenRepository,
+  REDIS_PREFIXES,
 } from '../../../../src/repositories/validationToken.repository';
 import { ResponseCodes } from '../../../../src/api/shared/enums/responseCodes.enum';
 import { ErrorCodes } from '../../../../src/api/shared/enums/errorCodes.enum';
+import { mockMailer } from '../../../mocks/mailer.mock';
 
 const redisHelper = buildRedisHelper();
 const testDb = testDbManager();
+mockMailer();
 
 describe('update email route', () => {
   let testApp: Express;
@@ -41,7 +44,7 @@ describe('update email route', () => {
   });
 
   test('should return success with code 200', async () => {
-    const { updateEmailToken, clearPassword } = await prepareContextUser({
+    const { updateEmailToken, clearPassword, user } = await prepareContextUser({
       testDb,
       validationTokenRepository,
       addUpdateEmailToken: true,
@@ -57,7 +60,13 @@ describe('update email route', () => {
     expect(body.code).toEqual(ResponseCodes.USER_EMAIL_UPDATED);
 
     const resultFromDb = await authRedisConnection.keys('*');
-    expect(resultFromDb).toHaveLength(0);
+    expect(resultFromDb).toHaveLength(1);
+    const key = resultFromDb[0];
+    const prefix = key.split(':')[0];
+    expect(prefix).toMatch(REDIS_PREFIXES.EMAIL_VALIDATION_TOKEN);
+
+    const storedUserId = await authRedisConnection.get(key);
+    expect(storedUserId).toEqual(user.id);
   });
 
   test('should return error with code 404 - user not found', async () => {

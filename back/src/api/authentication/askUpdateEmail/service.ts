@@ -1,5 +1,5 @@
 import { v4 as uuid4 } from 'uuid';
-import { connectAndSendEmail } from '../../../core/mailer';
+import { MailerFunction } from '../../../core/mailer';
 import { IUserRepository } from '../../../repositories/user.repository';
 import { IValidationTokenRepository } from '../../../repositories/validationToken.repository';
 import userNotFoundError from '../../shared/errors/userNotFound.error';
@@ -9,12 +9,14 @@ interface IValidationEmailServiceOptions {
   userId: string;
   userRepository: IUserRepository;
   validationTokenRepository: IValidationTokenRepository;
+  mailer: MailerFunction;
 }
 
 export default async ({
   userId,
   userRepository,
   validationTokenRepository,
+  mailer,
 }: IValidationEmailServiceOptions): Promise<void> => {
   const user = await getAndCheckUserById({
     userId,
@@ -27,7 +29,7 @@ export default async ({
   const urlValidationToken = token;
 
   try {
-    connectAndSendEmail({
+    mailer({
       to: user.email,
       html: `Url email update : ${urlValidationToken}`,
       subject: 'Veuillez changer votre email en cliquant sur le lien',

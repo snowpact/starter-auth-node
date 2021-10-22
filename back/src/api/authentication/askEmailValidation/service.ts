@@ -1,16 +1,17 @@
-import { v4 as uuid4 } from 'uuid';
-import { connectAndSendEmail } from '../../../core/mailer';
+import { MailerFunction } from '../../../core/mailer';
 import { IUserEntity } from '../../../entities/user.entity';
 import { IUserRepository } from '../../../repositories/user.repository';
 import { IValidationTokenRepository } from '../../../repositories/validationToken.repository';
 import userAlreadyEnabledError from '../../shared/errors/userAlreadyEnabled.error';
 import userBlockedError from '../../shared/errors/userBlocked.error';
 import userNotFoundError from '../../shared/errors/userNotFound.error';
+import { saveAndSendValidationEmailToken } from '../../shared/services/validationToken.service';
 
 interface IValidationEmailServiceOptions {
   userId: string;
   userRepository: IUserRepository;
   validationTokenRepository: IValidationTokenRepository;
+  mailer: MailerFunction;
 }
 
 const getAndCheckUser = async (
@@ -35,20 +36,9 @@ export default async ({
   userId,
   userRepository,
   validationTokenRepository,
+  mailer,
 }: IValidationEmailServiceOptions): Promise<void> => {
   const user = await getAndCheckUser(userId, userRepository);
 
-  const token = uuid4();
-  await validationTokenRepository.addEmailValidationToken({ userId: user.id, token });
-  const urlValidationToken = token;
-
-  try {
-    connectAndSendEmail({
-      to: user.email,
-      html: `Url email validation : ${urlValidationToken}`,
-      subject: 'Veuillez valider votre email en cliquant sur le lien',
-    });
-  } catch (error) {
-    console.log(error);
-  }
+  await saveAndSendValidationEmailToken(user, validationTokenRepository, mailer);
 };

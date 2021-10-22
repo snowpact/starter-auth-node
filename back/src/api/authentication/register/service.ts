@@ -1,16 +1,18 @@
 import { v4 as uuid4 } from 'uuid';
-import { connectAndSendEmail } from '../../../core/mailer';
+import { MailerFunction } from '../../../core/mailer';
 import { IUserEntity } from '../../../entities/user.entity';
 import { IUserRepository } from '../../../repositories/user.repository';
 import { IValidationTokenRepository } from '../../../repositories/validationToken.repository';
 import userAlreadyExistError from '../../shared/errors/userAlreadyExist.error';
 import { hashPassword } from '../../shared/services/password.service';
+import { saveAndSendValidationEmailToken } from '../../shared/services/validationToken.service';
 
 interface ILoginServiceOptions {
   email: string;
   password: string;
   userRepository: IUserRepository;
   validationTokenRepository: IValidationTokenRepository;
+  mailer: MailerFunction;
 }
 
 export default async ({
@@ -18,6 +20,7 @@ export default async ({
   password,
   userRepository,
   validationTokenRepository,
+  mailer,
 }: ILoginServiceOptions): Promise<void> => {
   const existingUser = await userRepository.getOneByEmail(email);
 
@@ -37,17 +40,5 @@ export default async ({
 
   await userRepository.createUser(user);
 
-  const token = uuid4();
-  await validationTokenRepository.addEmailValidationToken({ userId: user.id, token });
-  const urlValidationToken = token;
-
-  try {
-    connectAndSendEmail({
-      to: email,
-      html: `Url email validation : ${urlValidationToken}`,
-      subject: 'Veuillez valider votre email en cliquant sur le lien',
-    });
-  } catch (error) {
-    console.log(error);
-  }
+  await saveAndSendValidationEmailToken(user, validationTokenRepository, mailer);
 };

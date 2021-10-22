@@ -3,6 +3,7 @@ import { getCustomRepository } from 'typeorm';
 
 import { IApiOptions } from '../..';
 import { HttpStatuses } from '../../../core/httpStatuses';
+import { connectAndSendEmail } from '../../../core/mailer';
 import { RequestHandlerWithCustomRequestType } from '../../../core/utils';
 import UserRepository from '../../../repositories/user.repository';
 import { getValidationTokenRepository } from '../../../repositories/validationToken.repository';
@@ -18,6 +19,7 @@ export default ({ authRedisConnection }: IApiOptions): RequestHandlerWithCustomR
         userId,
         userRepository: getCustomRepository(UserRepository),
         validationTokenRepository: getValidationTokenRepository(authRedisConnection),
+        mailer: connectAndSendEmail,
       });
 
       const response = serializer();

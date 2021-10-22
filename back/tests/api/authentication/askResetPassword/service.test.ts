@@ -2,9 +2,8 @@ import userRepositoryMock from '../../../mocks/user.repository.mock';
 import { userEntityFactory } from '../../../helpers/factories/user.factory';
 import service from '../../../../src/api/authentication/askResetPassword/service';
 import validationTokenRepositoryMock from '../../../mocks/validationToken.repository.mock';
-import { mockMailer } from '../../../mocks/mailer.mock';
 
-mockMailer();
+const mailerMock = jest.fn();
 
 describe('askResetPassword service', () => {
   it('should ask for reset password correctly', async () => {
@@ -16,6 +15,7 @@ describe('askResetPassword service', () => {
       email: user.email,
       userRepository,
       validationTokenRepository,
+      mailer: mailerMock,
     });
 
     expect(userRepository.getOneByEmail).toBeCalledWith(user.email);
@@ -30,6 +30,7 @@ describe('askResetPassword service', () => {
       email: user.email,
       userRepository,
       validationTokenRepository,
+      mailer: mailerMock,
     });
 
     expect(userRepository.getOneByEmail).toBeCalledWith(user.email);
@@ -44,6 +45,7 @@ describe('askResetPassword service', () => {
       email: user.email,
       userRepository,
       validationTokenRepository,
+      mailer: mailerMock,
     });
 
     expect(userRepository.getOneByEmail).toBeCalledWith(user.email);
@@ -58,6 +60,7 @@ describe('askResetPassword service', () => {
       email: user.email,
       userRepository,
       validationTokenRepository,
+      mailer: mailerMock,
     });
 
     expect(userRepository.getOneByEmail).toBeCalledWith(user.email);
