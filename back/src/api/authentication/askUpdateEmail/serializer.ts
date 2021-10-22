@@ -6,6 +6,6 @@ export interface IAskUpdateEmailResponse {
 }
 
 export default (): IAskUpdateEmailResponse => ({
-  message: 'Email sent for validate new email',
+  message: 'Email sent for update email',
   code: ResponseCodes.USER_ASK_UPDATE_EMAIL,
 });
