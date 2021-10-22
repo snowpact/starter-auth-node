@@ -1,7 +1,9 @@
 import { Redis } from 'ioredis';
 
-// const TWO_HOURS_IN_SECONDS = 7400;
-const ONE_DAY_IN_SECONDS = 86400;
+const enum TTL_VALIDATION_TOKEN {
+  TWO_HOURS_IN_SECONDS = 7400,
+  ONE_DAY_IN_SECONDS = 86400,
+}
 
 export enum REDIS_PREFIXES {
   EMAIL_UPDATE_TOKEN = 'emailUpdateToken',
@@ -31,12 +33,12 @@ export interface IValidationTokenRepository {
 export class ValidationTokenRepository implements IValidationTokenRepository {
   constructor(private authenticationRedisConnection: Redis) {}
 
-  private addToken({ token, userId }: IAddTokenOptions, prefix: REDIS_PREFIXES): Promise<'OK'> {
-    return this.authenticationRedisConnection.setex(
-      this.keyWithPrefix(prefix, token),
-      ONE_DAY_IN_SECONDS,
-      userId,
-    );
+  private addToken(
+    { token, userId }: IAddTokenOptions,
+    prefix: REDIS_PREFIXES,
+    ttl: TTL_VALIDATION_TOKEN,
+  ): Promise<'OK'> {
+    return this.authenticationRedisConnection.setex(this.keyWithPrefix(prefix, token), ttl, userId);
   }
 
   private getToken(token: string, prefix: REDIS_PREFIXES): Promise<string | null> {
@@ -52,7 +54,11 @@ export class ValidationTokenRepository implements IValidationTokenRepository {
   }
 
   public addEmailValidationToken(validationTokenOptions: IAddTokenOptions): Promise<'OK'> {
-    return this.addToken(validationTokenOptions, REDIS_PREFIXES.EMAIL_VALIDATION_TOKEN);
+    return this.addToken(
+      validationTokenOptions,
+      REDIS_PREFIXES.EMAIL_VALIDATION_TOKEN,
+      TTL_VALIDATION_TOKEN.ONE_DAY_IN_SECONDS,
+    );
   }
   public getEmailValidationToken(token: string): Promise<string | null> {
     return this.getToken(token, REDIS_PREFIXES.EMAIL_VALIDATION_TOKEN);
@@ -62,7 +68,11 @@ export class ValidationTokenRepository implements IValidationTokenRepository {
   }
 
   public addEmailUpdateToken(updateEmailTokenOptions: IAddTokenOptions): Promise<'OK'> {
-    return this.addToken(updateEmailTokenOptions, REDIS_PREFIXES.EMAIL_UPDATE_TOKEN);
+    return this.addToken(
+      updateEmailTokenOptions,
+      REDIS_PREFIXES.EMAIL_UPDATE_TOKEN,
+      TTL_VALIDATION_TOKEN.ONE_DAY_IN_SECONDS,
+    );
   }
   public getEmailUpdateToken(token: string): Promise<string | null> {
     return this.getToken(token, REDIS_PREFIXES.EMAIL_UPDATE_TOKEN);
@@ -72,7 +82,11 @@ export class ValidationTokenRepository implements IValidationTokenRepository {
   }
 
   public addResetPasswordToken(resetPasswordTokenOptions: IAddTokenOptions): Promise<'OK'> {
-    return this.addToken(resetPasswordTokenOptions, REDIS_PREFIXES.RESET_PASSWORD_TOKEN);
+    return this.addToken(
+      resetPasswordTokenOptions,
+      REDIS_PREFIXES.RESET_PASSWORD_TOKEN,
+      TTL_VALIDATION_TOKEN.TWO_HOURS_IN_SECONDS,
+    );
   }
   public getResetPasswordToken(token: string): Promise<string | null> {
     return this.getToken(token, REDIS_PREFIXES.RESET_PASSWORD_TOKEN);

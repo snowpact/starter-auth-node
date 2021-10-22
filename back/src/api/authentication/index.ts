@@ -6,6 +6,7 @@ import askUpdateEmail from './askUpdateEmail';
 import login from './login';
 import refresh from './refresh';
 import register from './register';
+import resetPassword from './resetPassword';
 import updateEmail from './updateEmail';
 import validateEmail from './validateEmail';
 
@@ -18,4 +19,5 @@ export default (options: IApiOptions): Router =>
     askResetPassword(options),
     validateEmail(options),
     updateEmail(options),
+    resetPassword(options),
   );
