@@ -44,7 +44,7 @@ describe('askEmailValidationRouter route', () => {
   });
 
   test('should return success with code 200', async () => {
-    const { user, accessToken } = await prepareContextUser({ testDb });
+    const { user, accessToken } = await prepareContextUser({ testDb, enabled: false });
 
     const { status, body } = await request(testApp)
       .post('/api/email/validate/ask')
@@ -67,6 +67,7 @@ describe('askEmailValidationRouter route', () => {
     const { accessToken } = await prepareContextUser({
       testDb,
       saveUser: false,
+      enabled: false,
     });
 
     const { status, body } = await request(testApp)
@@ -84,6 +85,7 @@ describe('askEmailValidationRouter route', () => {
     const { accessToken } = await prepareContextUser({
       testDb,
       blocked: true,
+      enabled: false,
     });
 
     const { status, body } = await request(testApp)
@@ -92,6 +94,23 @@ describe('askEmailValidationRouter route', () => {
 
     expect(status).toBe(HttpStatuses.UNAUTHORIZED);
     expect(body.code).toEqual(ErrorCodes.USER_BLOCKED_UNAUTHORIZED);
+
+    const resultFromDb = await authRedisConnection.keys('*');
+    expect(resultFromDb).toHaveLength(0);
+  });
+
+  test('should return error with code 401, user already enabled', async () => {
+    const { accessToken } = await prepareContextUser({
+      testDb,
+      enabled: true,
+    });
+
+    const { status, body } = await request(testApp)
+      .post('/api/email/validate/ask')
+      .set('Authorization', `Bearer ${accessToken}`);
+
+    expect(status).toBe(HttpStatuses.UNAUTHORIZED);
+    expect(body.code).toEqual(ErrorCodes.USER_ALREADY_ENABLED_UNAUTHORIZED);
 
     const resultFromDb = await authRedisConnection.keys('*');
     expect(resultFromDb).toHaveLength(0);

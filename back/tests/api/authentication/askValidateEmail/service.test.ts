@@ -10,7 +10,7 @@ mockMailer();
 
 describe('askEmailValidation service', () => {
   it('should ask for validate email correctly', async () => {
-    const user = userEntityFactory();
+    const user = userEntityFactory({ enabled: false });
     const userRepository = userRepositoryMock({ getOneById: user });
     const validationTokenRepository = validationTokenRepositoryMock({});
 
@@ -42,7 +42,7 @@ describe('askEmailValidation service', () => {
     }
   });
   it('should return error - user blocked', async () => {
-    const user = userEntityFactory({ blocked: true });
+    const user = userEntityFactory({ blocked: true, enabled: false });
     const userRepository = userRepositoryMock({ getOneById: user });
     const validationTokenRepository = validationTokenRepositoryMock({});
 
@@ -55,6 +55,25 @@ describe('askEmailValidation service', () => {
       });
     } catch (error: any) {
       expect(error.code).toBe(ErrorCodes.USER_BLOCKED_UNAUTHORIZED);
+      expect(error.statusCode).toBe(HttpStatuses.UNAUTHORIZED);
+      expect(userRepository.getOneById).toBeCalledWith('12');
+      expect(validationTokenRepository.addEmailValidationToken).not.toBeCalled();
+    }
+  });
+  it('should return error - user already enabled', async () => {
+    const user = userEntityFactory({ enabled: true });
+    const userRepository = userRepositoryMock({ getOneById: user });
+    const validationTokenRepository = validationTokenRepositoryMock({});
+
+    expect.assertions(4);
+    try {
+      await service({
+        userId: '12',
+        userRepository,
+        validationTokenRepository,
+      });
+    } catch (error: any) {
+      expect(error.code).toBe(ErrorCodes.USER_ALREADY_ENABLED_UNAUTHORIZED);
       expect(error.statusCode).toBe(HttpStatuses.UNAUTHORIZED);
       expect(userRepository.getOneById).toBeCalledWith('12');
       expect(validationTokenRepository.addEmailValidationToken).not.toBeCalled();
