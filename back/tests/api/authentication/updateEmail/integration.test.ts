@@ -16,6 +16,7 @@ import {
 import { ResponseCodes } from '../../../../src/api/shared/enums/responseCodes.enum';
 import { ErrorCodes } from '../../../../src/api/shared/enums/errorCodes.enum';
 import { mockMailer } from '../../../mocks/mailer.mock';
+import UserRepository from '../../../../src/repositories/user.repository';
 
 const redisHelper = buildRedisHelper();
 const testDb = testDbManager();
@@ -67,6 +68,16 @@ describe('update email route', () => {
 
     const storedUserId = await authRedisConnection.get(key);
     expect(storedUserId).toEqual(user.id);
+
+    const storedUser = await testDb
+      .getConnection()
+      .getCustomRepository(UserRepository)
+      .getOneByEmail(newEmail);
+
+    expect(storedUser).toBeDefined();
+    if (storedUser) {
+      expect(storedUser.enabled).toBeFalsy();
+    }
   });
 
   test('should return error with code 404 - user not found', async () => {

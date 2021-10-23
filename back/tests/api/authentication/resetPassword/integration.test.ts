@@ -1,6 +1,7 @@
 import { Express } from 'express';
 import { Redis } from 'ioredis';
 import request from 'supertest';
+import { compare } from 'bcrypt';
 
 import { testDbManager } from '../../../helpers/testDb.helper';
 import buildTestApp from '../../../helpers/testApp.helper';
@@ -14,6 +15,7 @@ import {
 } from '../../../../src/repositories/validationToken.repository';
 import { ResponseCodes } from '../../../../src/api/shared/enums/responseCodes.enum';
 import { ErrorCodes } from '../../../../src/api/shared/enums/errorCodes.enum';
+import UserRepository from '../../../../src/repositories/user.repository';
 
 const redisHelper = buildRedisHelper();
 const testDb = testDbManager();
@@ -41,7 +43,7 @@ describe('reset password route', () => {
   });
 
   test('should return success with code 200', async () => {
-    const { resetPasswordToken } = await prepareContextUser({
+    const { resetPasswordToken, user, clearPassword } = await prepareContextUser({
       testDb,
       validationTokenRepository,
       addResetPasswordToken: true,
@@ -50,7 +52,7 @@ describe('reset password route', () => {
     const newPassword = 'Password95';
 
     const { status, body } = await request(testApp)
-      .post('/api/password')
+      .post('/api/password/reset')
       .send({ token: resetPasswordToken, password: newPassword });
 
     expect(status).toBe(HttpStatuses.OK);
@@ -58,6 +60,18 @@ describe('reset password route', () => {
 
     const resultFromDb = await authRedisConnection.keys('*');
     expect(resultFromDb).toHaveLength(0);
+
+    const storedUser = await testDb
+      .getConnection()
+      .getCustomRepository(UserRepository)
+      .getOneById(user.id);
+
+    expect(storedUser).toBeDefined();
+    if (storedUser) {
+      const isGoodPassword = await compare(clearPassword, storedUser.password);
+      expect(isGoodPassword).toBeTruthy();
+      expect(storedUser.enabled).toBeTruthy();
+    }
   });
 
   test('should return error - invalid token', async () => {
@@ -71,7 +85,7 @@ describe('reset password route', () => {
     const invalidToken = '268abbfd-630d-4506-b114-b1f71615650b';
 
     const { status, body } = await request(testApp)
-      .post('/api/password')
+      .post('/api/password/reset')
       .send({ token: invalidToken, password: newPassword });
 
     expect(status).toBe(HttpStatuses.UNAUTHORIZED);
@@ -92,7 +106,7 @@ describe('reset password route', () => {
     const newPassword = 'Password95';
 
     const { status, body } = await request(testApp)
-      .post('/api/password')
+      .post('/api/password/reset')
       .send({ token: resetPasswordToken, password: newPassword });
 
     expect(status).toBe(HttpStatuses.UNAUTHORIZED);
@@ -113,7 +127,7 @@ describe('reset password route', () => {
     const newPassword = 'Password95';
 
     const { status, body } = await request(testApp)
-      .post('/api/password')
+      .post('/api/password/reset')
       .send({ token: resetPasswordToken, password: newPassword });
 
     expect(status).toBe(HttpStatuses.UNAUTHORIZED);
@@ -134,7 +148,7 @@ describe('reset password route', () => {
     const newPassword = 'Password95';
 
     const { status, body } = await request(testApp)
-      .post('/api/password')
+      .post('/api/password/reset')
       .send({ token: resetPasswordToken, password: newPassword });
 
     expect(status).toBe(HttpStatuses.NOT_FOUND);

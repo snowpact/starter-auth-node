@@ -30,7 +30,7 @@ describe('update email service', () => {
     });
 
     expect(userRepository.getOneById).toBeCalledWith(user.id);
-    expect(userRepository.updateUser).toBeCalledWith(user.id, { email });
+    expect(userRepository.updateUser).toBeCalledWith(user.id, { email, enabled: false });
     expect(validationTokenRepository.getEmailUpdateToken).toBeCalledWith(token);
     expect(validationTokenRepository.deleteEmailUpdateToken).toBeCalledWith(token);
   });

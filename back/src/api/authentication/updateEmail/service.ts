@@ -48,7 +48,7 @@ export default async ({
     throw userAlreadyExistError();
   }
 
-  await userRepository.updateUser(userId, { email });
+  await userRepository.updateUser(userId, { email, enabled: false });
   await validationTokenRepository.deleteEmailUpdateToken(token);
 
   await saveAndSendValidationEmailToken(user, validationTokenRepository, mailer);
