@@ -56,7 +56,7 @@ describe('reset password route', () => {
       .send({ token: resetPasswordToken, password: newPassword });
 
     expect(status).toBe(HttpStatuses.OK);
-    expect(body.code).toEqual(ResponseCodes.USER_PASSWORD_UPDATED);
+    expect(body.code).toEqual(ResponseCodes.USER_PASSWORD_RESET);
 
     const resultFromDb = await authRedisConnection.keys('*');
     expect(resultFromDb).toHaveLength(0);

@@ -26,6 +26,7 @@ export interface ITokenRepository {
   refreshTokens: (opt: IRefreshTokenOptions) => Promise<[Error | null, any][]>;
   getAllRefreshTokensForUser: (userId: string) => Promise<string[]>;
   deleteTokensForUser: (userId: number, tokensToRemove: string[]) => Promise<number>;
+  deleteAllRefreshTokensForUser: (userId: string) => Promise<number>;
 }
 
 export class TokenRepository implements ITokenRepository {
@@ -84,6 +85,12 @@ export class TokenRepository implements ITokenRepository {
     }
 
     return Promise.resolve(0);
+  }
+
+  public async deleteAllRefreshTokensForUser(userId: string): Promise<number> {
+    return this.authenticationRedisConnection.del(
+      this.keyWithPrefix(REDIS_PREFIXES.REFRESH_TOKEN, userId),
+    );
   }
 
   public async getAllRefreshTokensForUser(userId: string): Promise<string[]> {

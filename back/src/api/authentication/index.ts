@@ -9,6 +9,7 @@ import refresh from './refresh';
 import register from './register';
 import resetPassword from './resetPassword';
 import updateEmail from './updateEmail';
+import updatePassword from './updatePassword';
 import validateEmail from './validateEmail';
 
 export default (options: IApiOptions): Router =>
@@ -22,4 +23,5 @@ export default (options: IApiOptions): Router =>
     validateEmail(options),
     updateEmail(options),
     resetPassword(options),
+    updatePassword(options),
   );
