@@ -49,7 +49,7 @@ help:
 
 .PHONY: install
 #%% install project
-install: pull-docker-images y-i-all
+install: pull-docker-images y-i-all db-migrate-run db-migrate-run-e2e
 
 .PHONY: pull-docker-images
 #%% Pull images
