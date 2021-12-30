@@ -4,6 +4,7 @@ import service from '../../../../src/api/authentication/askUpdateEmail/service';
 import { HttpStatuses } from '../../../../src/core/httpStatuses';
 import { ErrorCodes } from '../../../../src/api/shared/enums/errorCodes.enum';
 import validationTokenRepositoryMock from '../../../mocks/validationToken.repository.mock';
+import { buildLoggerMock } from '../../../helpers/logger.mock';
 
 const mailerMock = jest.fn();
 
@@ -18,6 +19,7 @@ describe('askUpdateEmail service', () => {
       userRepository,
       validationTokenRepository,
       mailer: mailerMock,
+      logger: buildLoggerMock(),
     });
 
     expect(userRepository.getOneById).toBeCalledWith(user.id);
@@ -34,6 +36,7 @@ describe('askUpdateEmail service', () => {
         userRepository,
         validationTokenRepository,
         mailer: mailerMock,
+        logger: buildLoggerMock(),
       });
     } catch (error: any) {
       expect(error.code).toBe(ErrorCodes.USER_NOT_FOUND);
@@ -54,6 +57,7 @@ describe('askUpdateEmail service', () => {
         userRepository,
         validationTokenRepository,
         mailer: mailerMock,
+        logger: buildLoggerMock(),
       });
     } catch (error: any) {
       expect(error.code).toBe(ErrorCodes.USER_BLOCKED_UNAUTHORIZED);
@@ -74,6 +78,7 @@ describe('askUpdateEmail service', () => {
         userRepository,
         validationTokenRepository,
         mailer: mailerMock,
+        logger: buildLoggerMock(),
       });
     } catch (error: any) {
       expect(error.code).toBe(ErrorCodes.USER_NOT_ENABLED_UNAUTHORIZED);

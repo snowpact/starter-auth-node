@@ -1,4 +1,5 @@
 import { compare } from 'bcrypt';
+import { ILogger } from '../../../core/logger';
 import { MailerFunction } from '../../../core/mailer';
 import { IUserRepository } from '../../../repositories/user.repository';
 import { IValidationTokenRepository } from '../../../repositories/validationToken.repository';
@@ -16,6 +17,7 @@ interface ILoginServiceOptions {
   userRepository: IUserRepository;
   validationTokenRepository: IValidationTokenRepository;
   mailer: MailerFunction;
+  logger: ILogger;
 }
 
 export default async ({
@@ -25,6 +27,7 @@ export default async ({
   userRepository,
   validationTokenRepository,
   mailer,
+  logger,
 }: ILoginServiceOptions): Promise<void> => {
   const userId = await validationTokenRepository.getEmailUpdateToken(token);
 
@@ -51,5 +54,5 @@ export default async ({
   await userRepository.updateUser(userId, { email, enabled: false });
   await validationTokenRepository.deleteEmailUpdateToken(token);
 
-  await saveAndSendValidationEmailToken(user, validationTokenRepository, mailer);
+  await saveAndSendValidationEmailToken({ user, validationTokenRepository, mailer, logger });
 };

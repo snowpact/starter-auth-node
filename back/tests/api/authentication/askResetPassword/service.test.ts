@@ -2,6 +2,7 @@ import userRepositoryMock from '../../../mocks/user.repository.mock';
 import { userEntityFactory } from '../../../helpers/factories/user.factory';
 import service from '../../../../src/api/authentication/askResetPassword/service';
 import validationTokenRepositoryMock from '../../../mocks/validationToken.repository.mock';
+import { buildLoggerMock } from '../../../helpers/logger.mock';
 
 const mailerMock = jest.fn();
 
@@ -16,6 +17,7 @@ describe('askResetPassword service', () => {
       userRepository,
       validationTokenRepository,
       mailer: mailerMock,
+      logger: buildLoggerMock(),
     });
 
     expect(userRepository.getOneByEmail).toBeCalledWith(user.email);
@@ -31,6 +33,7 @@ describe('askResetPassword service', () => {
       userRepository,
       validationTokenRepository,
       mailer: mailerMock,
+      logger: buildLoggerMock(),
     });
 
     expect(userRepository.getOneByEmail).toBeCalledWith(user.email);
@@ -46,6 +49,7 @@ describe('askResetPassword service', () => {
       userRepository,
       validationTokenRepository,
       mailer: mailerMock,
+      logger: buildLoggerMock(),
     });
 
     expect(userRepository.getOneByEmail).toBeCalledWith(user.email);
@@ -61,6 +65,7 @@ describe('askResetPassword service', () => {
       userRepository,
       validationTokenRepository,
       mailer: mailerMock,
+      logger: buildLoggerMock(),
     });
 
     expect(userRepository.getOneByEmail).toBeCalledWith(user.email);

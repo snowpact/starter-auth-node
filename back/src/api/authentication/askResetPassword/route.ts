@@ -21,12 +21,14 @@ export default ({ authRedisConnection }: IApiOptions): RequestHandlerWithCustomR
   ): Promise<Response | void> => {
     try {
       const { email } = req.body;
+      const { logger } = req;
 
       await service({
         email,
         userRepository: getCustomRepository(UserRepository),
         validationTokenRepository: getValidationTokenRepository(authRedisConnection),
         mailer: connectAndSendEmail,
+        logger,
       });
 
       const response = serializer();

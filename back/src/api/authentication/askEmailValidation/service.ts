@@ -1,3 +1,4 @@
+import { ILogger } from '../../../core/logger';
 import { MailerFunction } from '../../../core/mailer';
 import { IUserEntity } from '../../../entities/user.entity';
 import { IUserRepository } from '../../../repositories/user.repository';
@@ -12,6 +13,7 @@ interface IValidationEmailServiceOptions {
   userRepository: IUserRepository;
   validationTokenRepository: IValidationTokenRepository;
   mailer: MailerFunction;
+  logger: ILogger;
 }
 
 const getAndCheckUser = async (
@@ -37,8 +39,9 @@ export default async ({
   userRepository,
   validationTokenRepository,
   mailer,
+  logger,
 }: IValidationEmailServiceOptions): Promise<void> => {
   const user = await getAndCheckUser(userId, userRepository);
 
-  await saveAndSendValidationEmailToken(user, validationTokenRepository, mailer);
+  await saveAndSendValidationEmailToken({ user, validationTokenRepository, mailer, logger });
 };

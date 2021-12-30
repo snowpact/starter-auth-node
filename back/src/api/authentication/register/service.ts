@@ -1,4 +1,5 @@
 import { v4 as uuid4 } from 'uuid';
+import { ILogger } from '../../../core/logger';
 import { MailerFunction } from '../../../core/mailer';
 import { IUserEntity } from '../../../entities/user.entity';
 import { IUserRepository } from '../../../repositories/user.repository';
@@ -13,6 +14,7 @@ interface ILoginServiceOptions {
   userRepository: IUserRepository;
   validationTokenRepository: IValidationTokenRepository;
   mailer: MailerFunction;
+  logger: ILogger;
 }
 
 export default async ({
@@ -21,6 +23,7 @@ export default async ({
   userRepository,
   validationTokenRepository,
   mailer,
+  logger,
 }: ILoginServiceOptions): Promise<void> => {
   const existingUser = await userRepository.getOneByEmail(email);
 
@@ -40,5 +43,5 @@ export default async ({
 
   await userRepository.createUser(user);
 
-  await saveAndSendValidationEmailToken(user, validationTokenRepository, mailer);
+  await saveAndSendValidationEmailToken({ user, validationTokenRepository, mailer, logger });
 };

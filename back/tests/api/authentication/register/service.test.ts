@@ -4,6 +4,7 @@ import service from '../../../../src/api/authentication/register/service';
 import { HttpStatuses } from '../../../../src/core/httpStatuses';
 import { ErrorCodes } from '../../../../src/api/shared/enums/errorCodes.enum';
 import validationTokenRepositoryMock from '../../../mocks/validationToken.repository.mock';
+import { buildLoggerMock } from '../../../helpers/logger.mock';
 
 const mailerMock = jest.fn();
 
@@ -19,6 +20,7 @@ describe('register service', () => {
       userRepository,
       validationTokenRepository,
       mailer: mailerMock,
+      logger: buildLoggerMock(),
     });
 
     expect(userRepository.getOneByEmail).toBeCalledWith(email);
@@ -38,6 +40,7 @@ describe('register service', () => {
         userRepository,
         validationTokenRepository,
         mailer: mailerMock,
+        logger: buildLoggerMock(),
       });
     } catch (error: any) {
       expect(error.code).toBe(ErrorCodes.EMAIL_ALREADY_EXIST_BAD_REQUEST);

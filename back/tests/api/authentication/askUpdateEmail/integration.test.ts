@@ -8,11 +8,7 @@ import askUpdateEmailRouter from '../../../../src/api/authentication/askUpdateEm
 import buildRedisHelper from '../../../helpers/testRedis.helper';
 import { HttpStatuses } from '../../../../src/core/httpStatuses';
 import { prepareContextUser } from '../../../prepareContext/user';
-import {
-  // getValidationTokenRepository,
-  // IValidationTokenRepository,
-  REDIS_PREFIXES,
-} from '../../../../src/repositories/validationToken.repository';
+import { REDIS_PREFIXES } from '../../../../src/repositories/validationToken.repository';
 import { ResponseCodes } from '../../../../src/api/shared/enums/responseCodes.enum';
 import { ErrorCodes } from '../../../../src/api/shared/enums/errorCodes.enum';
 import { mockMailer } from '../../../mocks/mailer.mock';
@@ -24,12 +20,10 @@ mockMailer();
 describe('askUpdateEmail route', () => {
   let testApp: Express;
   let authRedisConnection: Redis;
-  // let validationTokenRepository: IValidationTokenRepository;
 
   beforeAll(async () => {
     await testDb.connect();
     authRedisConnection = redisHelper.connect();
-    // validationTokenRepository = getValidationTokenRepository(authRedisConnection);
     testApp = buildTestApp(askUpdateEmailRouter({ authRedisConnection }));
   });
 

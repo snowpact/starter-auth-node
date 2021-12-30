@@ -17,6 +17,7 @@ export default ({ authRedisConnection }: IApiOptions): RequestHandlerWithCustomR
   async (req: UpdateEmailRequest, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
       const { token, password, email } = req.body;
+      const { logger } = req;
 
       await service({
         token,
@@ -25,6 +26,7 @@ export default ({ authRedisConnection }: IApiOptions): RequestHandlerWithCustomR
         userRepository: getCustomRepository(UserRepository),
         validationTokenRepository: getValidationTokenRepository(authRedisConnection),
         mailer: connectAndSendEmail,
+        logger,
       });
 
       const response = serializer();

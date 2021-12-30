@@ -1,4 +1,5 @@
 import { v4 as uuid4 } from 'uuid';
+import { ILogger } from '../../../core/logger';
 import { MailerFunction } from '../../../core/mailer';
 import { IUserRepository } from '../../../repositories/user.repository';
 import { IValidationTokenRepository } from '../../../repositories/validationToken.repository';
@@ -10,6 +11,7 @@ interface IValidationEmailServiceOptions {
   userRepository: IUserRepository;
   validationTokenRepository: IValidationTokenRepository;
   mailer: MailerFunction;
+  logger: ILogger;
 }
 
 export default async ({
@@ -17,6 +19,7 @@ export default async ({
   userRepository,
   validationTokenRepository,
   mailer,
+  logger,
 }: IValidationEmailServiceOptions): Promise<void> => {
   const user = await getAndCheckUserById({
     userId,
@@ -29,12 +32,12 @@ export default async ({
   const urlValidationToken = token;
 
   try {
-    mailer({
+    await mailer({
       to: user.email,
       html: `Url email update : ${urlValidationToken}`,
       subject: 'Veuillez changer votre email en cliquant sur le lien',
     });
   } catch (error) {
-    console.log(error);
+    logger.warn({ message: 'Mail could not be sent', context: error });
   }
 };

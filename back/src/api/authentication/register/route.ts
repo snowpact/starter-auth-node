@@ -19,6 +19,7 @@ export default ({ authRedisConnection }: IApiOptions): RequestHandlerWithCustomR
       await authRedisConnection.multi().exec();
 
       const { email, password } = req.body;
+      const { logger } = req;
 
       await service({
         email,
@@ -26,6 +27,7 @@ export default ({ authRedisConnection }: IApiOptions): RequestHandlerWithCustomR
         userRepository: getCustomRepository(UserRepository),
         validationTokenRepository: getValidationTokenRepository(authRedisConnection),
         mailer: connectAndSendEmail,
+        logger,
       });
 
       const response = serializer();

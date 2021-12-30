@@ -5,6 +5,7 @@ import validationTokenRepositoryMock from '../../../mocks/validationToken.reposi
 import { hashPassword } from '../../../../src/api/shared/services/password.service';
 import { ErrorCodes } from '../../../../src/api/shared/enums/errorCodes.enum';
 import { HttpStatuses } from '../../../../src/core/httpStatuses';
+import { buildLoggerMock } from '../../../helpers/logger.mock';
 
 const mailerMock = jest.fn();
 
@@ -27,6 +28,7 @@ describe('update email service', () => {
       userRepository,
       validationTokenRepository,
       mailer: mailerMock,
+      logger: buildLoggerMock(),
     });
 
     expect(userRepository.getOneById).toBeCalledWith(user.id);
@@ -55,6 +57,7 @@ describe('update email service', () => {
         userRepository,
         validationTokenRepository,
         mailer: mailerMock,
+        logger: buildLoggerMock(),
       });
       console.log('testos');
     } catch (error: any) {
@@ -83,6 +86,7 @@ describe('update email service', () => {
         userRepository,
         validationTokenRepository,
         mailer: mailerMock,
+        logger: buildLoggerMock(),
       });
       console.log('testos');
     } catch (error: any) {
@@ -112,6 +116,7 @@ describe('update email service', () => {
         userRepository,
         validationTokenRepository,
         mailer: mailerMock,
+        logger: buildLoggerMock(),
       });
       console.log('testos');
     } catch (error: any) {
@@ -140,6 +145,7 @@ describe('update email service', () => {
         userRepository,
         validationTokenRepository,
         mailer: mailerMock,
+        logger: buildLoggerMock(),
       });
       console.log('testos');
     } catch (error: any) {
@@ -168,6 +174,7 @@ describe('update email service', () => {
         userRepository,
         validationTokenRepository,
         mailer: mailerMock,
+        logger: buildLoggerMock(),
       });
       console.log('testos');
     } catch (error: any) {
@@ -196,6 +203,7 @@ describe('update email service', () => {
         userRepository,
         validationTokenRepository,
         mailer: mailerMock,
+        logger: buildLoggerMock(),
       });
       console.log('testos');
     } catch (error: any) {

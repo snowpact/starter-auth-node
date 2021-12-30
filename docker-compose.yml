@@ -17,9 +17,6 @@ services:
       - backend-database-sp-auth
     environment:
       PORT: 8080
-      # ADMIN_API_KEY: $ADMIN_API_KEY
-      # GOOGLE_PROJECT_ID: "mrh-morgan-free-scrap"
-      # GOOGLE_PROJECT_LOCATION: "europe-west1"
       AUTH_REDIS_URL: redis://redis-sp-auth:6379/0
       DB_CACHE_REDIS_URL: redis://:redis@redis-sp-auth:6379/0
       DB_HOST: 'backend-database-sp-auth'
@@ -31,7 +28,7 @@ services:
       REFRESH_TOKEN_SECRET: r3p67zIY4TlYzTvu1VC6r3mV54545x1j
       ACCESS_TOKEN_LIFE: 120
       REFRESH_TOKEN_LIFE: 600
-      FROM_EMAIL: test@snowpact.com
+      FROM_EMAIL: test@email.com
       SMTP_ENDPOINT: mailhog-sp-auth
       SMTP_PORT: 1025
       SMTP_USERNAME: username
@@ -55,9 +52,6 @@ services:
       - e2e-test-backend-database-sp-auth
     environment:
       PORT: 8080
-      # ADMIN_API_KEY: $ADMIN_API_KEY
-      # GOOGLE_PROJECT_ID: "mrh-morgan-free-scrap"
-      # GOOGLE_PROJECT_LOCATION: "europe-west1"
       AUTH_REDIS_URL: redis://e2e-test-redis-sp-auth:6379/0
       DB_CACHE_REDIS_URL: redis://:redis@e2e-test-redis-sp-auth:6379/0
       DB_HOST: 'e2e-test-backend-database-sp-auth'
@@ -69,7 +63,7 @@ services:
       REFRESH_TOKEN_SECRET: r3p67zIY4TlYzTvu1VC6r3mV54545x1j
       ACCESS_TOKEN_LIFE: 120
       REFRESH_TOKEN_LIFE: 600
-      FROM_EMAIL: test@snowpact.com
+      FROM_EMAIL: test@email.com
       SMTP_ENDPOINT: mailhog-sp-auth
       SMTP_PORT: 1025
       SMTP_USERNAME: username

@@ -79,9 +79,7 @@ export class TokenRepository implements ITokenRepository {
   public async deleteTokensForUser(userId: number, tokensToRemove: string[]): Promise<number> {
     if (tokensToRemove.length > 0) {
       const key = this.keyWithPrefix(REDIS_PREFIXES.REFRESH_TOKEN, userId);
-      const result = await this.authenticationRedisConnection.hdel(key, ...tokensToRemove);
-
-      return result;
+      return this.authenticationRedisConnection.hdel(key, ...tokensToRemove);
     }
 
     return Promise.resolve(0);
@@ -95,9 +93,7 @@ export class TokenRepository implements ITokenRepository {
 
   public async getAllRefreshTokensForUser(userId: string): Promise<string[]> {
     const key = this.keyWithPrefix(REDIS_PREFIXES.REFRESH_TOKEN, userId);
-    const refreshTokens = await this.authenticationRedisConnection.hkeys(key);
-
-    return refreshTokens;
+    return this.authenticationRedisConnection.hkeys(key);
   }
 }
 
